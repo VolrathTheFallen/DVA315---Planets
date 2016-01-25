@@ -25,6 +25,8 @@ void main(void) {
 
 	//test
 
+	//test via VS Team Expl
+
 	if (mailSlot == INVALID_HANDLE_VALUE) {
 		printf("Failed to get a handle to the mailslot!!\nHave you started the server?\n");
 		return;
