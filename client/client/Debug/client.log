@@ -1,0 +1,14 @@
+﻿Build started 2016-01-25 13:18:19.
+     1>Project "D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\client\client.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         D:\Program2\Visual Studio Professional 2013\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt client.c
+         client.c
+       Link:
+         D:\Program2\Visual Studio Professional 2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\Debug\client.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\Debug\client.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\Debug\client.lib" /MACHINE:X86 Debug\client.obj
+         Debug\wrapper.obj
+         client.vcxproj -> D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\Debug\client.exe
+     1>Done Building Project "D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\client\client.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.37
