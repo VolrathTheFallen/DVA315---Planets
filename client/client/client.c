@@ -23,6 +23,8 @@ void main(void) {
 
 	mailSlot = mailslotConnect("\\\\.\\mailslot\\mailbox"); 
 
+	//test
+
 	if (mailSlot == INVALID_HANDLE_VALUE) {
 		printf("Failed to get a handle to the mailslot!!\nHave you started the server?\n");
 		return;
