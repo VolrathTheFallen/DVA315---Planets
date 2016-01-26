@@ -1,13 +1,10 @@
-﻿Build started 2016-01-26 10:09:20.
+﻿Build started 2016-01-26 11:24:06.
      1>Project "C:\Users\Admin\Source\Repos\DVA315---Planets\server\server\server.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\Admin\Source\Repos\DVA315---Planets\server\server" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt doublylinkedlist.c server.c
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\Admin\Source\Repos\DVA315---Planets\server\server" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt server.c
          server.c
-         doublylinkedlist.c
-     1>c:\users\admin\source\repos\dva315---planets\server\server\doublylinkedlist.c(9): warning C4028: formal parameter 1 different from declaration
-     1>c:\users\admin\source\repos\dva315---planets\server\server\doublylinkedlist.c(19): warning C4028: formal parameter 1 different from declaration
-     1>c:\users\admin\source\repos\dva315---planets\server\server\doublylinkedlist.c(31): warning C4028: formal parameter 1 different from declaration
-         Generating Code...
+     1>c:\users\admin\source\repos\dva315---planets\server\server\server.c(139): warning C4013: 'planetExists' undefined; assuming extern returning int
+     1>c:\users\admin\source\repos\dva315---planets\server\server\server.c(163): warning C4133: 'initializing' : incompatible types - from 'planet_type *' to 'Node *'
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Admin\Source\Repos\DVA315---Planets\server\Debug\server.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Admin\Source\Repos\DVA315---Planets\server\Debug\server.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Admin\Source\Repos\DVA315---Planets\server\Debug\server.lib" /MACHINE:X86 Debug\doublylinkedlist.obj
          Debug\server.obj
@@ -17,4 +14,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.60
+Time Elapsed 00:00:00.65

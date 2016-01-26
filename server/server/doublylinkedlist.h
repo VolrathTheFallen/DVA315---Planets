@@ -16,12 +16,12 @@ struct Node  {
 struct Node* head; // global variable - pointer to head node.
 
 //Creates a new Node and returns pointer to it. 
-struct Node* GetNewNode(int );
+struct Node* GetNewNode(planet_type );
 
 //Inserts a Node at head of doubly linked list
-void InsertAtHead(int );
+void InsertAtHead(planet_type );
 
 //Inserts a Node at tail of Doubly linked list
-void InsertAtTail(int );
+void InsertAtTail(planet_type );
 
 #endif /* DOUBLYLINKEDLIST_H */

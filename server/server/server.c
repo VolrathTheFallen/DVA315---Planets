@@ -41,6 +41,8 @@
 LRESULT WINAPI MainWndProc( HWND, UINT, WPARAM, LPARAM );
 DWORD WINAPI mailThread(LPVOID);
 
+// Global variables
+CRITICAL_SECTION dbAccess;
 
 
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
@@ -112,6 +114,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdL
 DWORD WINAPI mailThread(LPVOID arg) {
 
 	char buffer[1024];
+	planet_type *planet = (planet_type*)malloc(sizeof(planet_type));
 	DWORD bytesRead;
 	static int posY = 0;
 	HANDLE mailbox;
@@ -121,21 +124,25 @@ DWORD WINAPI mailThread(LPVOID arg) {
 							/* NOTE: The name of a mailslot must start with "\\\\.\\mailslot\\"  */
 
 	
-	mailbox = mailslotCreate ("\\\\.\\mailslot\\mailbox");
+	mailbox = mailslotCreate("\\\\.\\mailslot\\serverMailslot");
 
-
-	for(;;) {				
 							/* (ordinary file manipulating functions are used to read from mailslots) */
 							/* in this example the server receives strings from the client side and   */
 							/* displays them in the presentation window                               */
 							/* NOTE: binary data can also be sent and received, e.g. planet structures*/
  
-	bytesRead = mailslotRead (mailbox, buffer, strlen(buffer)); 
+	bytesRead = mailslotRead(mailbox, (void *)planet, sizeof(planet_type));
 
 	if(bytesRead!= 0) {
-							/* NOTE: It is appropriate to replace this code with something */
-							/*       that match your needs here.                           */
-		posY++;  
+
+		// If planet name doesnt exist, add it to linked list
+		if (!planetExists(*planet)) {
+			EnterCriticalSection(&dbAccess);
+			InsertAtHead(*planet);
+			LeaveCriticalSection(&dbAccess);
+
+		}
+
 							/* (hDC is used reference the previously created window) */							
 		TextOut(hDC, 10, 50+posY%200, buffer, bytesRead);
 	}
@@ -143,10 +150,41 @@ DWORD WINAPI mailThread(LPVOID arg) {
 							/* failed reading from mailslot                              */
 							/* (in this example we ignore this, and happily continue...) */
     }
-  }
+  
 
   return 0;
 }
+
+
+
+// Looks for planet name in linked list, returns 1 if found and 0 if not.
+int planetExists(planet_type *planet) {
+
+	struct Node *iterator = planet;
+	int counter = 0;
+	int found = 0;
+
+	if (iterator == NULL) {
+		printf("\nThe list is empty!");
+		return 0;
+	}
+
+	while (iterator != NULL)
+	{
+		if ( strcmp(iterator->data.name, planet->name) )
+		{
+			// planet with this name exists
+			return 1;
+		}
+		iterator = iterator->next;
+		counter++;
+	}
+
+	return 0;
+
+}
+
+
 
 
 /********************************************************************\
