@@ -14,15 +14,27 @@
 #include "wrapper.h"
 #include <assert.h>
 
+//Global variable
+CRITICAL_SECTION console;
+
+typedef struct checkMailParams{
+	int *nPlanetsptr;
+	HANDLE clientMailslot;
+}checkMailParams;
 
 planet_type* getUserInput(void);
+void checkMailslot(int *nPlanetsptr, HANDLE clientMailslot);
 
 void main(void) {
 
-	HANDLE serverMailslot, clientMailslot;
+	HANDLE serverMailslot, clientMailslot, checkMailThread;
 	DWORD bytesWritten, procID;
 	char procIDString[30], mailSlotString[18] = "\\\\.\\mailslot\\", clientMailslotName[256];
 	planet_type *planet;
+	int nPlanets = 0;
+	checkMailParams mailParams;
+	mailParams.nPlanetsptr = &nPlanets;
+	mailParams.clientMailslot = clientMailslot;
 
 	procID = GetCurrentProcessId();
 	assert(procID != 0);	//Check if function successful
@@ -60,9 +72,18 @@ void main(void) {
 
 
 		bytesWritten = mailslotWrite(serverMailslot, (void *)planet, sizeof(planet_type));
+
 		if (bytesWritten != -1)
+		{
 			printf("\n---------------\nName: %s\nsx: %.2f\nsy: %.2f\nvx: %.2f\nvy: %.2f\nmass: %.2f\nlife: %d\npid: %s\n---------------\n\n%d bytes sent to server.\n",
-			planet->name, planet->sx, planet->sy, planet->vx, planet->vy, planet->mass, planet->life, planet->pid, bytesWritten);
+				planet->name, planet->sx, planet->sy, planet->vx, planet->vy, planet->mass, planet->life, planet->pid, bytesWritten);
+
+			if (nPlanets == 0)
+			{
+				checkMailThread = threadCreate(checkMailslot, (LPVOID)&mailParams);
+			}
+			nPlanets = nPlanets + 1;
+		}
 		else
 			printf("Failed sending data to server\n");
 		Sleep(1000);
@@ -84,6 +105,8 @@ planet_type* getUserInput(void)
 	planet = (planet_type*)malloc(sizeof(planet_type)); //Alloc memory for planet
 	if (planet == NULL)
 		return NULL;
+
+	EnterCriticalSection(&console);
 
 	printf("Please input the following information:");
 
@@ -148,5 +171,36 @@ planet_type* getUserInput(void)
 		}
 	}
 
+	LeaveCriticalSection(&console);
+
 	return planet;
+}
+
+
+/***************************************
+* This function checks the mailslot    *
+* for messages from the server and     *
+* keeps track of the number of		   *
+* living planets created by the client *
+***************************************/
+void checkMailslot(LPVOID mailParams)
+{
+	int res;
+	char buffer[256];
+	checkMailParams* params = (checkMailParams*)mailParams;
+
+	while (1)
+	{
+		res = mailslotRead(params->clientMailslot, buffer, 256); // Attempts to read from mailslot
+
+		if (res != 0) // We read something from the mailslot
+		{
+			EnterCriticalSection(&console);
+			printf("\nServer: %s\n", buffer);
+			LeaveCriticalSection(&console);
+			*(params->nPlanetsptr) = *(params->nPlanetsptr) - 1;
+			if (*(params->nPlanetsptr) == 0)
+				return;	//Close thread if no active planets
+		}
+	}
 }
