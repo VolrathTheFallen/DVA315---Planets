@@ -44,6 +44,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\Admin\Source\Repos\DVA315---Planets\server\server;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -64,10 +65,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="doublylinkedlist.c" />
     <ClCompile Include="server.c" />
     <ClCompile Include="wrapper.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="doublylinkedlist.h" />
     <ClInclude Include="wrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

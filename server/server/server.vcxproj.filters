@@ -21,9 +21,15 @@
     <ClCompile Include="wrapper.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="doublylinkedlist.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="doublylinkedlist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
