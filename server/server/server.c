@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "wrapper.h"
+#include "doublylinkedlist.h"
 
 							/* the server uses a timer to periodically update the presentation window */
 							/* here is the timer id and timer period defined                          */
