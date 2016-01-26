@@ -39,3 +39,43 @@ void InsertAtTail(planet_type x) {
 	temp->next = newNode;
 	newNode->prev = temp;
 }
+
+//Removes a node containing a planet, returns 1 if planet removed successfully, 0 if it failed to remove the planet
+int removeNode(planet_type *planet) {
+
+	struct Node* current = head;
+	struct Node* del;
+	int count = 0; //the index of the node we're currently looking at
+
+	// Base case
+	if (head == NULL || planet == NULL)
+		return 0;
+
+	// Loop through ll to find which planet to delete and get the pointer to it
+	while (current != NULL)
+	{
+		if (current->data.name == planet->name)
+			del = current;
+		count++;
+		current = current->next;
+	}
+ 
+  // If node to be deleted is head node
+  if (head->data.name == del->data.name)
+	  head = planet;
+ 
+  // Change next only if node to be deleted is NOT the last node
+  if(del->next != NULL)
+    del->next->prev = del->prev;
+ 
+  // Change prev only if node to be deleted is NOT the first node
+  if(del->prev != NULL)
+    del->prev->next = del->next;     
+ 
+  // Finally, free the memory occupied by de
+  free(del);
+
+  // If function reaches here it has succeeded the deletion
+  return 1;
+
+}

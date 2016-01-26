@@ -7,11 +7,11 @@
 #include <wrapper.h>
 
 // Definition of abstract node that holds planet data and pointers to previous and next planets.
-struct Node  {
+struct Node {
 	planet_type data;
 	struct Node* next;
 	struct Node* prev;
-};
+} node;
 
 struct Node* head; // global variable - pointer to head node.
 
@@ -23,5 +23,8 @@ void InsertAtHead(planet_type );
 
 //Inserts a Node at tail of Doubly linked list
 void InsertAtTail(planet_type );
+
+//Removes a node containing a planet
+int removeNode(planet_type *);
 
 #endif /* DOUBLYLINKEDLIST_H */

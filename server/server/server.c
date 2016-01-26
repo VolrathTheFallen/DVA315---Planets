@@ -68,7 +68,6 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdL
 	HWND hWnd;
 	DWORD threadID;
 	MSG msg;
-	
 
 							/* Create the window, 3 last parameters important */
 							/* The tile of the window, the callback function */
@@ -117,29 +116,39 @@ DWORD WINAPI mailThread(LPVOID arg) {
 	planet_type *planet = (planet_type*)malloc(sizeof(planet_type));
 	DWORD bytesRead;
 	static int posY = 0;
-	HANDLE mailbox;
+	char mailSlotString[18] = "\\\\.\\mailslot\\", clientMailslotName[256];
+	HANDLE serverMailslot;
+	HANDLE clientMailslot;
 
 							/* create a mailslot that clients can use to pass requests through   */
 							/* (the clients use the name below to get contact with the mailslot) */
 							/* NOTE: The name of a mailslot must start with "\\\\.\\mailslot\\"  */
 
 	
-	mailbox = mailslotCreate("\\\\.\\mailslot\\serverMailslot");
+	serverMailslot = mailslotCreate("\\\\.\\mailslot\\serverMailslot");
 
 							/* (ordinary file manipulating functions are used to read from mailslots) */
 							/* in this example the server receives strings from the client side and   */
 							/* displays them in the presentation window                               */
 							/* NOTE: binary data can also be sent and received, e.g. planet structures*/
  
-	bytesRead = mailslotRead(mailbox, (void *)planet, sizeof(planet_type));
+	bytesRead = mailslotRead(serverMailslot, (void *)planet, sizeof(planet_type));
 
 	if(bytesRead!= 0) {
 
 		// If planet name doesnt exist, add it to linked list
-		if (!planetExists(*planet)) {
+		if (!planetExists(planet)) {
 			EnterCriticalSection(&dbAccess);
 			InsertAtHead(*planet);
 			LeaveCriticalSection(&dbAccess);
+
+			wsprintf(clientMailslotName, "\\\\.\\mailslot\\%d", mailSlotString, planet->pid); //Generate clientMailSlotName
+			clientMailslot = mailslotCreate(clientMailslotName);
+			if (clientMailslot == INVALID_HANDLE_VALUE) {
+				printf("Failed to get a handle to the client mailslot!!!\n");
+				getch();
+				return;
+			}
 
 		}
 
@@ -181,6 +190,21 @@ int planetExists(planet_type *planet) {
 	}
 
 	return 0;
+
+}
+
+/*	Removes a planet from linkedlist and deallocates its memory
+	a message will be sent to the client that created the planet with the reason of termination. */
+int killPlanet(planet_type *planet) {
+
+	if (planetExists(planet)) {
+		if (removeNode(planet)) {
+			// Send Message to client: Planet removed
+			return 1;
+		}
+	}
+	else
+		return 0;
 
 }
 
