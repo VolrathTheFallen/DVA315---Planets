@@ -14,9 +14,6 @@
 #include "wrapper.h"
 #include <assert.h>
 
-//Global variable
-//CRITICAL_SECTION console;
-
 typedef struct checkMailParams{
 	int *nPlanetsptr;
 	HANDLE clientMailslot;
@@ -35,14 +32,12 @@ void main(void) {
 	checkMailParams mailParams;
 	mailParams.nPlanetsptr = &nPlanets;
 
-	//if (!InitializeCriticalSectionAndSpinCount(&console, 0x00000400))
-	//	return 0;
 
 	procID = GetCurrentProcessId();
 	assert(procID != 0);	//Check if function successful
 
 	wsprintf(procIDString, "%d", procID);
-	wsprintf(clientMailslotName, "\\\\.\\mailslot\\%d", mailSlotString, procID); //Generate clientMailSlotName
+	wsprintf(clientMailslotName, "\\\\.\\mailslot\\%s", procIDString); //Generate clientMailSlotName
 
 	serverMailslot = mailslotConnect("\\\\.\\mailslot\\serverMailslot");
 
@@ -97,7 +92,6 @@ void main(void) {
 	mailslotClose(serverMailslot);
 	mailslotClose(clientMailslot);
 	free(planet);
-	//DeleteCriticalSection(&console);
 	return;
 }
 
@@ -111,16 +105,12 @@ planet_type* getUserInput(void)
 	if (planet == NULL)
 		return NULL;
 
-//	EnterCriticalSection(&console);
-
 	printf("Please input the following information:");
 
 	printf("\nName: ");
 	if (fgets(input, sizeof(input), stdin)) {
 		if (1 == sscanf_s(input, "%d", &i)) {
-			/* i can be safely used */
-			//strcpy_s(planet->name, 20, input);
-			//printf("\n%s\n", planet->name);
+
 		}
 		strcpy_s(planet->name, 20, input);
 		char *pos;
@@ -175,9 +165,6 @@ planet_type* getUserInput(void)
 			planet->life = atoll(input);
 		}
 	}
-
-//	LeaveCriticalSection(&console);
-
 	return planet;
 }
 
@@ -200,9 +187,7 @@ void __stdcall checkMailslot(LPVOID mailParams)
 
 		if (res != 0) // We read something from the mailslot
 		{
-			//EnterCriticalSection(&console);
-			printf("\nServer: %s\n", buffer);
-			//LeaveCriticalSection(&console);
+			MessageBox(0, buffer, "Server Message", 1);
 			*(params->nPlanetsptr) = *(params->nPlanetsptr) - 1;
 			if (*(params->nPlanetsptr) == 0)
 				return;	//Close thread if no active planets

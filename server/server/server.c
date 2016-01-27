@@ -47,6 +47,7 @@ CRITICAL_SECTION dbAccess;
 
 // Function prototypes
 void __stdcall calculatePosition(planet_type *planet);
+int killPlanet(planet_type *, int);
 
 
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
@@ -144,7 +145,6 @@ DWORD WINAPI mailThread(LPVOID arg) {
 		bytesRead = mailslotRead(serverMailslot, (void *)planet, sizeof(planet_type));
 
 		if (bytesRead != 0) {
-
 			// If planet name doesnt exist, add it to linked list
 			if (!planetExists(planet)) {
 				EnterCriticalSection(&dbAccess);
@@ -166,16 +166,60 @@ DWORD WINAPI mailThread(LPVOID arg) {
 // Calculates the planets next position
 void __stdcall calculatePosition(planet_type *planet)
 {
+	struct Node *iterator;
+	double xF, yF, Ftot, Atot, Ax, Ay, resAx, resAy, distanceX, distanceY, distanceTot, maxX = 800, maxY = 600, G = 0.00000000006667259, dt = 10;
+
 	while (1)
 	{
-		if (head->next == NULL)
+		EnterCriticalSection(&dbAccess);
+		if (head->next != NULL) // Only one planet
 		{
-			planet->sx = planet->sx + planet->vx;
-			planet->sy = planet->sy + planet->vy;
+			iterator = head;
+			resAx = 0;
+			resAy = 0;
+			while (iterator != NULL) // Multiple planets
+			{
+				if (strcmp(iterator->data.name, planet->name) != 0) // Ignore self
+				{
+					distanceX = abs(planet->sx - iterator->data.sx);
+					distanceY = abs(planet->sy - iterator->data.sy);
+					distanceTot = sqrt((distanceX * distanceX) + (distanceY * distanceY));
+
+					Ftot = G*((planet->mass * iterator->data.mass) / (distanceTot * distanceTot));
+
+					Atot = Ftot / planet->mass;
+
+					Ax = Atot * ((iterator->data.sx - planet->sx) / distanceTot);
+
+					Ay = Atot * ((iterator->data.sy - planet->sy) / distanceTot);
+
+					resAx = resAx + Ax;
+					resAy = resAy + Ay;
+				}
+				iterator = iterator->next;
+			}
+			planet->vx = planet->vx + (resAx * dt);
+			planet->vy = planet->vy + (resAy * dt);
 		}
 
+		planet->sx = planet->sx + planet->vx;
+		planet->sy = planet->sy + planet->vy;
 
+		planet->life = planet->life - 1;
 
+		LeaveCriticalSection(&dbAccess);
+
+		if (planet->life == 0)
+		{
+			//Send message to client
+			killPlanet(planet, 0); //Kill 
+			return; //Kill thread
+		}
+		else if (planet->sx > 800 || planet->sx < 0 || planet->sy > 600 || planet->sy < 0)
+		{
+			killPlanet(planet, 1);
+			return;
+		}
 		Sleep(10);
 	}
 }
@@ -194,7 +238,7 @@ int planetExists(planet_type *planet) {
 
 	while (iterator != NULL)
 	{
-		if ( strcmp(iterator->data.name, planet->name) )
+		if ( strcmp(iterator->data.name, planet->name) == 0 )
 		{
 			// planet with this name exists
 			return 1;
@@ -208,26 +252,43 @@ int planetExists(planet_type *planet) {
 
 /*	Removes a planet from linkedlist and deallocates its memory
 	a message will be sent to the client that created the planet with the reason of termination. */
-int killPlanet(planet_type *planet) 
+int killPlanet(planet_type *planet, int flag) 
 {
-	char  clientMailslotName[256], mailSlotString[18] = "\\\\.\\mailslot\\";
+	char  clientMailslotName[256], mailSlotString[18] = "\\\\.\\mailslot\\", message[256], name[30], procIDString[30];
 	HANDLE clientMailslot;
 
 	if (planetExists(planet))
 	{
-		wsprintf(clientMailslotName, "\\\\.\\mailslot\\%d", mailSlotString, planet->pid); //Generate clientMailSlotName
-		clientMailslot = mailslotCreate(clientMailslotName);
+		wsprintf(clientMailslotName, "\\\\.\\mailslot\\%s", planet->pid); //Generate clientMailSlotName
+
+		MessageBox(0, clientMailslotName, "", 1);
+
+		clientMailslot = mailslotConnect(clientMailslotName);
 		if (clientMailslot == INVALID_HANDLE_VALUE) 
 		{
-			printf("Failed to get a handle to the client mailslot!!!\n");
+			MessageBox(0, "Failed to get a handle to the client mailslot!!!", "", 1);
 			return;
 		}
 
+		EnterCriticalSection(&dbAccess);
+		strcpy_s(name, sizeof(planet->name), planet->name);
 		if (removeNode(planet)) 
 		{
 			// Send Message to client: Planet removed
+			if (flag == 1)
+				wsprintf(message, "%s died from going out of bounds.",  name);
+				
+			else if (flag == 0)
+				wsprintf(message, "%s died from old age.", name);
+
+			mailslotWrite(clientMailslot, message, sizeof(message));
+
+			LeaveCriticalSection(&dbAccess);
+
 			return 1;
 		}
+
+		LeaveCriticalSection(&dbAccess);
 	}
 	else
 		return 0;
@@ -253,6 +314,7 @@ LRESULT CALLBACK MainWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam 
 	PAINTSTRUCT ps;
 	HANDLE context;
 	static DWORD color = 0;
+	struct Node *iterator;
   
 	switch( msg ) {
 							/**************************************************************/
@@ -265,14 +327,21 @@ LRESULT CALLBACK MainWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam 
 							/*    WM_TIMER:         (received when our timer expires)
 							/**************************************************************/
 		case WM_TIMER:
-
+			
 							/* NOTE: replace code below for periodic update of the window */
 							/*       e.g. draw a planet system)                           */
 							/* NOTE: this is referred to as the 'graphics' thread in the lab spec. */
+			EnterCriticalSection(&dbAccess);
+			iterator = head;
+			while (iterator != NULL)
+			{
+				SetPixel(hDC, iterator->data.sx, iterator->data.sy, (COLORREF)color);
 
-						
-			SetPixel(hDC, head->data.sx, head->data.sy, (COLORREF) color);
-			color += 12;
+				color += 12;
+
+				iterator = iterator->next;
+			}
+			LeaveCriticalSection(&dbAccess);
 			windowRefreshTimer (hWnd, UPDATE_FREQ);
 			break;
 							/****************************************************************\
@@ -283,9 +352,9 @@ LRESULT CALLBACK MainWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam 
 		case WM_PAINT:
 							/* NOTE: The code for this message can be removed. It's just */
 							/*       for showing something in the window.                */
-			//context = BeginPaint( hWnd, &ps ); /* (you can safely remove the following line of code) */
+			context = BeginPaint( hWnd, &ps ); /* (you can safely remove the following line of code) */
 			//TextOut( context, 10, 10, "Hello, World!", 13 ); /* 13 is the string length */
-			//EndPaint( hWnd, &ps );
+			EndPaint( hWnd, &ps );
 			break;
 							/**************************************************************\
 							*     WM_DESTROY: PostQuitMessage() is called                  *

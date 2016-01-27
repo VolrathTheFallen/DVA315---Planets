@@ -54,28 +54,30 @@ int removeNode(planet_type *planet) {
 	// Loop through ll to find which planet to delete and get the pointer to it
 	while (current != NULL)
 	{
-		if (current->data.name == planet->name)
+		if (strcmp(current->data.name, planet->name) == 0)
 			del = current;
 		count++;
 		current = current->next;
 	}
  
-  // If node to be deleted is head node
-  if (head->data.name == del->data.name)
-	  head = planet;
+	// If node to be deleted is head node
+	if (strcmp(head->data.name, del->data.name) == 0)
+	{
+		del = head;
+		head = NULL;
+	}
+	// Change next only if node to be deleted is NOT the last node
+	if(del->next != NULL)
+	del->next->prev = del->prev;
  
-  // Change next only if node to be deleted is NOT the last node
-  if(del->next != NULL)
-    del->next->prev = del->prev;
+	// Change prev only if node to be deleted is NOT the first node
+	if(del->prev != NULL)
+	del->prev->next = del->next;     
  
-  // Change prev only if node to be deleted is NOT the first node
-  if(del->prev != NULL)
-    del->prev->next = del->next;     
- 
-  // Finally, free the memory occupied by de
-  free(del);
+	// Finally, free the memory occupied by de
+	free(del);
 
-  // If function reaches here it has succeeded the deletion
-  return 1;
+	// If function reaches here it has succeeded the deletion
+	return 1;
 
 }
