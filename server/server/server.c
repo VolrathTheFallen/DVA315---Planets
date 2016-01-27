@@ -22,6 +22,7 @@
 #include <math.h>
 #include "wrapper.h"
 #include "doublylinkedlist.h"
+#include <time.h>
 
 							/* the server uses a timer to periodically update the presentation window */
 							/* here is the timer id and timer period defined                          */
@@ -43,6 +44,9 @@ DWORD WINAPI mailThread(LPVOID);
 
 // Global variables
 CRITICAL_SECTION dbAccess;
+
+// Function prototypes
+void __stdcall calculatePosition(planet_type *planet);
 
 
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
@@ -68,6 +72,9 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdL
 	HWND hWnd;
 	DWORD threadID;
 	MSG msg;
+
+	if (!InitializeCriticalSectionAndSpinCount(&dbAccess, 0x00000400)) 
+		return 0;
 
 							/* Create the window, 3 last parameters important */
 							/* The tile of the window, the callback function */
@@ -101,6 +108,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdL
 		DispatchMessage( &msg );
 	}
 
+	DeleteCriticalSection(&dbAccess);
 	return msg.wParam;
 }
 
@@ -116,9 +124,8 @@ DWORD WINAPI mailThread(LPVOID arg) {
 	planet_type *planet = (planet_type*)malloc(sizeof(planet_type));
 	DWORD bytesRead;
 	static int posY = 0;
-	char mailSlotString[18] = "\\\\.\\mailslot\\", clientMailslotName[256];
+	char mailSlotString[18] = "\\\\.\\mailslot\\", inputString[1024];
 	HANDLE serverMailslot;
-	HANDLE clientMailslot;
 
 							/* create a mailslot that clients can use to pass requests through   */
 							/* (the clients use the name below to get contact with the mailslot) */
@@ -132,49 +139,56 @@ DWORD WINAPI mailThread(LPVOID arg) {
 							/* displays them in the presentation window                               */
 							/* NOTE: binary data can also be sent and received, e.g. planet structures*/
  
-	bytesRead = mailslotRead(serverMailslot, (void *)planet, sizeof(planet_type));
+	while (1)
+	{
+		bytesRead = mailslotRead(serverMailslot, (void *)planet, sizeof(planet_type));
 
-	if(bytesRead!= 0) {
+		if (bytesRead != 0) {
 
-		// If planet name doesnt exist, add it to linked list
-		if (!planetExists(planet)) {
-			EnterCriticalSection(&dbAccess);
-			InsertAtHead(*planet);
-			LeaveCriticalSection(&dbAccess);
-
-			wsprintf(clientMailslotName, "\\\\.\\mailslot\\%d", mailSlotString, planet->pid); //Generate clientMailSlotName
-			clientMailslot = mailslotCreate(clientMailslotName);
-			if (clientMailslot == INVALID_HANDLE_VALUE) {
-				printf("Failed to get a handle to the client mailslot!!!\n");
-				getch();
-				return;
+			// If planet name doesnt exist, add it to linked list
+			if (!planetExists(planet)) {
+				EnterCriticalSection(&dbAccess);
+				InsertAtHead(*planet);
+				LeaveCriticalSection(&dbAccess);
+				threadCreate(calculatePosition, &(head->data));
 			}
-
 		}
-
-							/* (hDC is used reference the previously created window) */							
-		TextOut(hDC, 10, 50+posY%200, buffer, bytesRead);
+		else {
+			/* failed reading from mailslot                              */
+			/* (in this example we ignore this, and happily continue...) */
+		}
 	}
-	else {
-							/* failed reading from mailslot                              */
-							/* (in this example we ignore this, and happily continue...) */
-    }
   
-
-  return 0;
+	free(planet);
+	return 0;
 }
 
+// Calculates the planets next position
+void __stdcall calculatePosition(planet_type *planet)
+{
+	while (1)
+	{
+		if (head->next == NULL)
+		{
+			planet->sx = planet->sx + planet->vx;
+			planet->sy = planet->sy + planet->vy;
+		}
 
+
+
+		Sleep(10);
+	}
+}
 
 // Looks for planet name in linked list, returns 1 if found and 0 if not.
 int planetExists(planet_type *planet) {
 
-	struct Node *iterator = planet;
-	int counter = 0;
-	int found = 0;
+	struct Node *iterator = head;
+	//int counter = 0;
+	//int found = 0;
 
 	if (iterator == NULL) {
-		printf("\nThe list is empty!");
+		//printf("\nThe list is empty!");
 		return 0;
 	}
 
@@ -186,29 +200,38 @@ int planetExists(planet_type *planet) {
 			return 1;
 		}
 		iterator = iterator->next;
-		counter++;
+		//counter++;
 	}
 
 	return 0;
-
 }
 
 /*	Removes a planet from linkedlist and deallocates its memory
 	a message will be sent to the client that created the planet with the reason of termination. */
-int killPlanet(planet_type *planet) {
+int killPlanet(planet_type *planet) 
+{
+	char  clientMailslotName[256], mailSlotString[18] = "\\\\.\\mailslot\\";
+	HANDLE clientMailslot;
 
-	if (planetExists(planet)) {
-		if (removeNode(planet)) {
+	if (planetExists(planet))
+	{
+		wsprintf(clientMailslotName, "\\\\.\\mailslot\\%d", mailSlotString, planet->pid); //Generate clientMailSlotName
+		clientMailslot = mailslotCreate(clientMailslotName);
+		if (clientMailslot == INVALID_HANDLE_VALUE) 
+		{
+			printf("Failed to get a handle to the client mailslot!!!\n");
+			return;
+		}
+
+		if (removeNode(planet)) 
+		{
 			// Send Message to client: Planet removed
 			return 1;
 		}
 	}
 	else
 		return 0;
-
 }
-
-
 
 
 /********************************************************************\
@@ -228,8 +251,6 @@ int killPlanet(planet_type *planet) {
 LRESULT CALLBACK MainWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) {
   
 	PAINTSTRUCT ps;
-	static int posX = 10;
-	int posY;
 	HANDLE context;
 	static DWORD color = 0;
   
@@ -249,11 +270,8 @@ LRESULT CALLBACK MainWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam 
 							/*       e.g. draw a planet system)                           */
 							/* NOTE: this is referred to as the 'graphics' thread in the lab spec. */
 
-							/* here we draw a simple sinus curve in the window    */
-							/* just to show how pixels are drawn                  */
-			posX += 4;
-			posY = (int) (10 * sin(posX / (double) 30) + 20);
-			SetPixel(hDC, posX % 547, posY, (COLORREF) color);
+						
+			SetPixel(hDC, head->data.sx, head->data.sy, (COLORREF) color);
 			color += 12;
 			windowRefreshTimer (hWnd, UPDATE_FREQ);
 			break;
@@ -265,9 +283,9 @@ LRESULT CALLBACK MainWndProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam 
 		case WM_PAINT:
 							/* NOTE: The code for this message can be removed. It's just */
 							/*       for showing something in the window.                */
-			context = BeginPaint( hWnd, &ps ); /* (you can safely remove the following line of code) */
-			TextOut( context, 10, 10, "Hello, World!", 13 ); /* 13 is the string length */
-			EndPaint( hWnd, &ps );
+			//context = BeginPaint( hWnd, &ps ); /* (you can safely remove the following line of code) */
+			//TextOut( context, 10, 10, "Hello, World!", 13 ); /* 13 is the string length */
+			//EndPaint( hWnd, &ps );
 			break;
 							/**************************************************************\
 							*     WM_DESTROY: PostQuitMessage() is called                  *

@@ -1,8 +1,8 @@
 /* Doubly Linked List implementation */
 #include <stdio.h>
 #include <stdlib.h>
-#include <doublylinkedlist.h>
-#include <wrapper.h>
+#include "doublylinkedlist.h"
+#include "wrapper.h"
 
 
 //Creates a new Node and returns pointer to it. 
@@ -44,7 +44,7 @@ void InsertAtTail(planet_type x) {
 int removeNode(planet_type *planet) {
 
 	struct Node* current = head;
-	struct Node* del;
+	struct Node* del = NULL;
 	int count = 0; //the index of the node we're currently looking at
 
 	// Base case

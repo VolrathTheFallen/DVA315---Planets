@@ -15,7 +15,7 @@
 #include <assert.h>
 
 //Global variable
-CRITICAL_SECTION console;
+//CRITICAL_SECTION console;
 
 typedef struct checkMailParams{
 	int *nPlanetsptr;
@@ -23,7 +23,7 @@ typedef struct checkMailParams{
 }checkMailParams;
 
 planet_type* getUserInput(void);
-void checkMailslot(int *nPlanetsptr, HANDLE clientMailslot);
+void __stdcall checkMailslot(int *nPlanetsptr, HANDLE clientMailslot);
 
 void main(void) {
 
@@ -34,7 +34,9 @@ void main(void) {
 	int nPlanets = 0;
 	checkMailParams mailParams;
 	mailParams.nPlanetsptr = &nPlanets;
-	mailParams.clientMailslot = clientMailslot;
+
+	//if (!InitializeCriticalSectionAndSpinCount(&console, 0x00000400))
+	//	return 0;
 
 	procID = GetCurrentProcessId();
 	assert(procID != 0);	//Check if function successful
@@ -58,6 +60,8 @@ void main(void) {
 		return;
 	}
 
+	mailParams.clientMailslot = clientMailslot;
+
 	while (1)
 	{
 		planet = getUserInput();
@@ -80,7 +84,7 @@ void main(void) {
 
 			if (nPlanets == 0)
 			{
-				checkMailThread = threadCreate(checkMailslot, (LPVOID)&mailParams);
+				checkMailThread = threadCreate(checkMailslot, (LPVOID)&mailParams); //Create thread if no thread active
 			}
 			nPlanets = nPlanets + 1;
 		}
@@ -93,6 +97,7 @@ void main(void) {
 	mailslotClose(serverMailslot);
 	mailslotClose(clientMailslot);
 	free(planet);
+	//DeleteCriticalSection(&console);
 	return;
 }
 
@@ -106,7 +111,7 @@ planet_type* getUserInput(void)
 	if (planet == NULL)
 		return NULL;
 
-	EnterCriticalSection(&console);
+//	EnterCriticalSection(&console);
 
 	printf("Please input the following information:");
 
@@ -171,7 +176,7 @@ planet_type* getUserInput(void)
 		}
 	}
 
-	LeaveCriticalSection(&console);
+//	LeaveCriticalSection(&console);
 
 	return planet;
 }
@@ -183,7 +188,7 @@ planet_type* getUserInput(void)
 * keeps track of the number of		   *
 * living planets created by the client *
 ***************************************/
-void checkMailslot(LPVOID mailParams)
+void __stdcall checkMailslot(LPVOID mailParams)
 {
 	int res;
 	char buffer[256];
@@ -195,12 +200,13 @@ void checkMailslot(LPVOID mailParams)
 
 		if (res != 0) // We read something from the mailslot
 		{
-			EnterCriticalSection(&console);
+			//EnterCriticalSection(&console);
 			printf("\nServer: %s\n", buffer);
-			LeaveCriticalSection(&console);
+			//LeaveCriticalSection(&console);
 			*(params->nPlanetsptr) = *(params->nPlanetsptr) - 1;
 			if (*(params->nPlanetsptr) == 0)
 				return;	//Close thread if no active planets
 		}
+		Sleep(1000);
 	}
 }
