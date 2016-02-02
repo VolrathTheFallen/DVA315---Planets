@@ -64,15 +64,26 @@ int removeNode(planet_type *planet) {
 	if (strcmp(head->data.name, del->data.name) == 0)
 	{
 		del = head;
-		head = NULL;
+
+		if (head->next != NULL)
+		{
+			head = head->next;
+		}
+		else
+		{
+			head = NULL;
+		}
 	}
-	// Change next only if node to be deleted is NOT the last node
-	if(del->next != NULL)
-	del->next->prev = del->prev;
- 
-	// Change prev only if node to be deleted is NOT the first node
-	if(del->prev != NULL)
-	del->prev->next = del->next;     
+	else
+	{
+		// Change next only if node to be deleted is NOT the last node
+		if (del->next != NULL)
+			del->next->prev = del->prev;
+
+		// Change prev only if node to be deleted is NOT the first node
+		if (del->prev != NULL)
+			del->prev->next = del->next;
+	}
  
 	// Finally, free the memory occupied by de
 	free(del);

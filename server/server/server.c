@@ -31,6 +31,8 @@
 
 							/* (the server uses a mailslot for incoming client requests) */
 
+#define G 6.67259e-11
+
 
 
 /*********************  Prototypes  ***************************/
@@ -167,8 +169,8 @@ DWORD WINAPI mailThread(LPVOID arg) {
 void __stdcall calculatePosition(planet_type *planet)
 {
 	struct Node *iterator;
-	double xF, yF, Ftot, Atot, Ax, Ay, resAx, resAy, distanceX, distanceY, distanceTot, maxX = 800, maxY = 600, G = 0.00000000006667259, dt = 10;
-
+	double xF, yF, Ftot, Atot, Ax, Ay, resAx, resAy, distanceX, distanceY, distanceTot, maxX = 800, maxY = 600, dt = 10; // G = 0.00000000006667259;
+	
 	while (1)
 	{
 		EnterCriticalSection(&dbAccess);
@@ -181,13 +183,11 @@ void __stdcall calculatePosition(planet_type *planet)
 			{
 				if (strcmp(iterator->data.name, planet->name) != 0) // Ignore self
 				{
-					distanceX = abs(planet->sx - iterator->data.sx);
-					distanceY = abs(planet->sy - iterator->data.sy);
+					distanceX = planet->sx - iterator->data.sx; // Doesn't matter if negative, dissapears when quadrated
+					distanceY = planet->sy - iterator->data.sy;
 					distanceTot = sqrt((distanceX * distanceX) + (distanceY * distanceY));
 
-					Ftot = G*((planet->mass * iterator->data.mass) / (distanceTot * distanceTot));
-
-					Atot = Ftot / planet->mass;
+					Atot = G*(iterator->data.mass / (distanceTot * distanceTot));
 
 					Ax = Atot * ((iterator->data.sx - planet->sx) / distanceTot);
 
@@ -202,8 +202,8 @@ void __stdcall calculatePosition(planet_type *planet)
 			planet->vy = planet->vy + (resAy * dt);
 		}
 
-		planet->sx = planet->sx + planet->vx;
-		planet->sy = planet->sy + planet->vy;
+		planet->sx = planet->sx + (planet->vx * dt);
+		planet->sy = planet->sy + (planet->vy * dt);
 
 		planet->life = planet->life - 1;
 
