@@ -228,11 +228,8 @@ void __stdcall calculatePosition(planet_type *planet)
 int planetExists(planet_type *planet) {
 
 	struct Node *iterator = head;
-	//int counter = 0;
-	//int found = 0;
 
 	if (iterator == NULL) {
-		//printf("\nThe list is empty!");
 		return 0;
 	}
 
@@ -244,7 +241,6 @@ int planetExists(planet_type *planet) {
 			return 1;
 		}
 		iterator = iterator->next;
-		//counter++;
 	}
 
 	return 0;
