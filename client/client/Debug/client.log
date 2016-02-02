@@ -1,14 +1,31 @@
-﻿Build started 2016-01-25 13:18:19.
-     1>Project "D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\client\client.vcxproj" on node 2 (Build target(s)).
+﻿Build started 2016-02-02 14:01:30.
+     1>Project "C:\Users\Admin\Source\Repos\DVA315---Planets\client\client\client.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         D:\Program2\Visual Studio Professional 2013\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt client.c
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt client.c wrapper.c
+         wrapper.c
+     1>c:\users\admin\source\repos\dva315---planets\client\client\wrapper.c(23): warning C4047: 'return' : 'DWORD' differs in levels of indirection from 'HANDLE'
+     1>c:\users\admin\source\repos\dva315---planets\client\client\wrapper.c(69): warning C4047: 'function' : 'LPDWORD' differs in levels of indirection from 'LPDWORD *'
+     1>c:\users\admin\source\repos\dva315---planets\client\client\wrapper.c(69): warning C4024: 'WriteFile' : different types for formal and actual parameter 4
+     1>c:\users\admin\source\repos\dva315---planets\client\client\wrapper.c(96): warning C4018: '>' : signed/unsigned mismatch
          client.c
+     1>c:\users\admin\source\repos\dva315---planets\client\client\client.c(46): warning C4013: 'getch' undefined; assuming extern returning int
+     1>c:\users\admin\source\repos\dva315---planets\client\client\client.c(66): warning C4098: 'main' : 'void' function returning a value
+     1>c:\users\admin\source\repos\dva315---planets\client\client\client.c(82): warning C4113: 'void (__stdcall *)(int *,HANDLE)' differs in parameter lists from 'LPTHREAD_START_ROUTINE'
+     1>c:\users\admin\source\repos\dva315---planets\client\client\client.c(82): warning C4133: 'function' : incompatible types - from 'void (__stdcall *)(int *,HANDLE)' to 'LPTHREAD_START_ROUTINE'
+     1>c:\users\admin\source\repos\dva315---planets\client\client\client.c(82): warning C4047: '=' : 'HANDLE' differs in levels of indirection from 'DWORD'
+     1>c:\users\admin\source\repos\dva315---planets\client\client\client.c(165): warning C4244: '=' : conversion from '__int64' to 'int', possible loss of data
+     1>c:\users\admin\source\repos\dva315---planets\client\client\client.c(179): warning C4028: formal parameter 1 different from declaration
+     1>c:\users\admin\source\repos\dva315---planets\client\client\client.c(179): warning C4029: declared formal parameter list different from definition
+         Generating Code...
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /l"0x0409" /nologo /fo"Debug\client.res" client.rc 
        Link:
-         D:\Program2\Visual Studio Professional 2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\Debug\client.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\Debug\client.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\Debug\client.lib" /MACHINE:X86 Debug\client.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Admin\Source\Repos\DVA315---Planets\client\Debug\client.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Admin\Source\Repos\DVA315---Planets\client\Debug\client.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Admin\Source\Repos\DVA315---Planets\client\Debug\client.lib" /MACHINE:X86 Debug\client.res
+         Debug\client.obj
          Debug\wrapper.obj
-         client.vcxproj -> D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\Debug\client.exe
-     1>Done Building Project "D:\Skola\Computer Science\DVA315 Operating Systems\lab2_files\client\client\client.vcxproj" (Build target(s)).
+         client.vcxproj -> C:\Users\Admin\Source\Repos\DVA315---Planets\client\Debug\client.exe
+     1>Done Building Project "C:\Users\Admin\Source\Repos\DVA315---Planets\client\client\client.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.37
+Time Elapsed 00:00:01.49
