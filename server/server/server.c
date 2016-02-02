@@ -261,7 +261,6 @@ int killPlanet(planet_type *planet, int flag)
 	{
 		wsprintf(clientMailslotName, "\\\\.\\mailslot\\%s", planet->pid); //Generate clientMailSlotName
 
-		MessageBox(0, clientMailslotName, "", 1);
 
 		clientMailslot = mailslotConnect(clientMailslotName);
 		if (clientMailslot == INVALID_HANDLE_VALUE) 
