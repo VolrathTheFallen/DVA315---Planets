@@ -7,8 +7,13 @@
 
 LRESULT WINAPI MainWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT WINAPI MonitorWndProc(HWND, UINT, WPARAM, LPARAM);
+<<<<<<< HEAD
 planet_type createPlanet(HWND hWnd);
 void refreshLocalPlanetList(HWND hWnd);
+=======
+void createPlanet();
+int planetExists(planet_type *);
+>>>>>>> origin/master
 
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
 /* we need it to access the window for printing and drawin */
@@ -224,4 +229,26 @@ void refreshLocalPlanetList(HWND hWnd)
 	//IDC_LIST_LOCAL
 	SendMessage(hWnd, LB_ADDSTRING, IDC_LIST_LOCAL, head->data.name);
 
+}
+
+// Looks for planet name in linked list, returns 1 if found and 0 if not.
+int planetExists(planet_type *planet) {
+
+	struct Node *iterator = head;
+
+	if (iterator == NULL) {
+		return 0;
+	}
+
+	while (iterator != NULL)
+	{
+		if (strcmp(iterator->data.name, planet->name) == 0)
+		{
+			// planet with this name exists
+			return 1;
+		}
+		iterator = iterator->next;
+	}
+
+	return 0;
 }
