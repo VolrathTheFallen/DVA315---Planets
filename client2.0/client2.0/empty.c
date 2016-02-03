@@ -4,16 +4,14 @@
 #include "doublylinkedlist.h"
 
 #define BUFFERSIZE 256
+#define MAX_PATH 128
 
 LRESULT WINAPI MainWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT WINAPI MonitorWndProc(HWND, UINT, WPARAM, LPARAM);
-<<<<<<< HEAD
 planet_type createPlanet(HWND hWnd);
-void refreshLocalPlanetList(HWND hWnd);
-=======
-void createPlanet();
+void AddToListBox(HWND hWnd, char *msg, int listBox);
 int planetExists(planet_type *);
->>>>>>> origin/master
+int exportPlanets(HWND hWnd);
 
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
 /* we need it to access the window for printing and drawin */
@@ -99,14 +97,13 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		case ID_BUTTON_CREATE: // Creates planet out of information in textboxes in mainDialog
 			InsertAtHead(createPlanet(hWnd)); //Add to DB
-			MessageBox(0, head->data.name, "Test", 1);
-			refreshLocalPlanetList(hWnd);
+			AddToListBox(hWnd, head->data.name, IDC_LIST_LOCAL);
 			break;
 		case ID_BUTTON_IMPORT:
 			MessageBox(NULL, "Klicked import button", "Test", 0);
 			break;
 		case ID_BUTTON_EXPORT:
-			MessageBox(NULL, "Klicked export button", "Test", 0);
+			exportPlanets(hWnd);
 			break;
 		}
 		return 0;
@@ -136,7 +133,7 @@ planet_type createPlanet(HWND hWnd)
 	}
 	else
 	{
-		if (1)//!planetExists(planet))
+		if (!planetExists(&planet))
 		{
 			strcpy_s(planet.name, sizeof(planet.name), buffer);
 		}
@@ -224,11 +221,76 @@ planet_type createPlanet(HWND hWnd)
 	return planet;
 }
 
-void refreshLocalPlanetList(HWND hWnd)
+void AddToListBox(HWND hWnd, char *msg, int listBox)
 {
-	//IDC_LIST_LOCAL
-	SendMessage(hWnd, LB_ADDSTRING, IDC_LIST_LOCAL, head->data.name);
+	HWND hwndList = GetDlgItem(hWnd, listBox);
 
+	SendMessage(hwndList, LB_ADDSTRING, NULL, (LPARAM)msg);
+}
+
+int exportPlanets(HWND hWnd)
+{
+	OPENFILENAME ofn;
+	//char fileName[MAX_PATH] = "";
+	HANDLE localListBox = GetDlgItem(hWnd, IDC_LIST_LOCAL);
+	char buffer[BUFFERSIZE];
+
+	int selInd = -1;
+
+	ZeroMemory(&ofn, sizeof(ofn));
+
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFilter = "Planet Files (*.dat)\0*.dat\0";
+	ofn.lpstrFile = "";// fileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.lpstrDefExt = "dat";
+	ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
+
+	if (GetSaveFileName(&ofn))
+	{
+		FILE *file = fopen_s(ofn.lpstrFile, ofn.lpstrFileTitle, "wb");
+		int selCount = SendMessage(localListBox, LB_GETSELCOUNT, NULL, NULL);
+		int listCount = SendMessage(localListBox, LB_GETCOUNT, NULL, NULL);
+
+		if (file)
+		{
+			if (selCount > 0)
+			{
+				for (int i = 0; i < listCount; i++)
+				{
+					if (SendMessage(localListBox, LB_GETSEL, i, 0) > 0) // LB_GETSELITEMS for list of items
+					{
+						SendMessage(localListBox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
+
+						// Loop through all planets in local list
+						struct Node *iterator = head;
+						while (iterator != NULL)
+						{
+							if (strcmp(iterator->data.name, buffer) == 0)
+							{
+								fwrite(&(iterator->data), sizeof(planet_type), 1, file);
+							}
+							// Continue iteration
+							iterator = iterator->next;
+						}
+					}
+				}
+				MessageBox(0, "Planets saved to file", "Success!", 1);
+			}
+			else
+			{
+				struct Node *iterator = head;
+				while (iterator != NULL)
+				{
+					fwrite(&(iterator->data), sizeof(planet_type), 1, file);
+					iterator = iterator->next;
+				}
+				MessageBox(0, "Planets saved to file", "Success!", 1);
+			}
+			fclose(file);
+		}
+	}
 }
 
 // Looks for planet name in linked list, returns 1 if found and 0 if not.

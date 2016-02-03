@@ -1,13 +1,27 @@
-﻿Build started 2016-02-03 14:35:45.
+﻿Build started 2016-02-03 15:28:22.
      1>Project "D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\client2.0\client2.0.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          D:\Program2\Visual Studio Professional 2013\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt empty.c
          empty.c
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(47): warning C4133: 'function' : incompatible types - from 'unsigned short [17]' to 'LPCSTR'
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(130): warning C4033: 'createPlanet' must return a value
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(225): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'char [20]'
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(225): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(220): warning C4715: 'createPlanet' : not all control paths return a value
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(7): warning C4005: 'MAX_PATH' : macro redefinition
+                 c:\program files (x86)\windows kits\8.1\include\shared\minwindef.h(60) : see previous definition of 'MAX_PATH'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(50): warning C4133: 'function' : incompatible types - from 'unsigned short [17]' to 'LPCSTR'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(132): warning C4033: 'createPlanet' must return a value
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(228): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(228): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(252): warning C4047: 'function' : 'FILE **' differs in levels of indirection from 'LPSTR'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(252): warning C4024: 'fopen_s' : different types for formal and actual parameter 1
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(252): warning C4047: 'initializing' : 'FILE *' differs in levels of indirection from 'errno_t'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(253): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(253): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(253): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(253): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(254): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(254): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(254): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(254): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(222): warning C4715: 'createPlanet' : not all control paths return a value
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(294): warning C4716: 'exportPlanets' : must return a value
        Link:
          D:\Program2\Visual Studio Professional 2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\Debug\client2.0.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\Debug\client2.0.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\Debug\client2.0.lib" /MACHINE:X86 Debug\client.res
          Debug\doublylinkedlist.obj
@@ -18,4 +32,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.37
+Time Elapsed 00:00:00.36
