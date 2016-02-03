@@ -3,11 +3,12 @@
 #include "resource.h"
 #include "doublylinkedlist.h"
 
-#define UPDATE_FREQ     10	
+#define BUFFERSIZE 256
 
 LRESULT WINAPI MainWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT WINAPI MonitorWndProc(HWND, UINT, WPARAM, LPARAM);
-void createPlanet();
+planet_type createPlanet(HWND hWnd);
+void refreshLocalPlanetList(HWND hWnd);
 
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
 /* we need it to access the window for printing and drawin */
@@ -83,19 +84,18 @@ LRESULT CALLBACK MonitorWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 {
-	char buffer[256];
 	switch (msg)
 	{
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
 		case ID_BUTTON_SEND:
-			GetDlgItemText(hWnd, IDC_EDIT_NAME, buffer, 256);
-			MessageBox(NULL, buffer, "Test", 0);
+			MessageBox(NULL, "Klicked send button", "Test", 0);
 			break;
 		case ID_BUTTON_CREATE: // Creates planet out of information in textboxes in mainDialog
-			createPlanet();
-			MessageBox(NULL, "Klicked create button", "Test", 0);
+			InsertAtHead(createPlanet(hWnd)); //Add to DB
+			MessageBox(0, head->data.name, "Test", 1);
+			refreshLocalPlanetList(hWnd);
 			break;
 		case ID_BUTTON_IMPORT:
 			MessageBox(NULL, "Klicked import button", "Test", 0);
@@ -117,7 +117,111 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;// DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-void createPlanet()
+planet_type createPlanet(HWND hWnd)
 {
+	char buffer[BUFFERSIZE] = {'\0'};
+
+	planet_type planet;
+
+	GetDlgItemText(hWnd, IDC_EDIT_NAME, buffer, BUFFERSIZE);
+	if (strlen(buffer) < 1)
+	{
+		MessageBox(0, "Please provide input!", "ERROR", 1);
+		return;
+	}
+	else
+	{
+		if (1)//!planetExists(planet))
+		{
+			strcpy_s(planet.name, sizeof(planet.name), buffer);
+		}
+		else
+		{
+			MessageBox(0, "Planet already exists!", "ERROR", 1);
+			return planet;
+		}
+	}
+
+	GetDlgItemText(hWnd, IDC_EDIT_XPOSITION, buffer, BUFFERSIZE);
+	if (strlen(buffer) < 1)
+	{
+		MessageBox(0, "Please provide input!", "ERROR", 1);
+		return planet;
+	}
+	else
+	{
+		sscanf_s(buffer, "%lf", &(planet.sx));
+	}
+
+	GetDlgItemText(hWnd, IDC_EDIT_YPOSITION, buffer, BUFFERSIZE);
+	if (strlen(buffer) < 1)
+	{
+		MessageBox(0, "Please provide input!", "ERROR", 1);
+		return planet;
+	}
+	else
+	{
+		sscanf_s(buffer, "%lf", &(planet.sy));
+	}
+
+	GetDlgItemText(hWnd, IDC_EDIT_XVELOCITY, buffer, BUFFERSIZE);
+	if (strlen(buffer) < 1)
+	{
+		MessageBox(0, "Please provide input!", "ERROR", 1);
+		return planet;
+	}
+	else
+	{
+		sscanf_s(buffer, "%lf", &(planet.vx));
+	}
+
+	GetDlgItemText(hWnd, IDC_EDIT_YVELOCITY, buffer, BUFFERSIZE);
+	if (strlen(buffer) < 1)
+	{
+		MessageBox(0, "Please provide input!", "ERROR", 1);
+		return planet;
+	}
+	else
+	{
+		sscanf_s(buffer, "%lf", &(planet.vy));
+	}
+
+	GetDlgItemText(hWnd, IDC_EDIT_MASS, buffer, BUFFERSIZE);
+	if (strlen(buffer) < 1)
+	{
+		MessageBox(0, "Please provide input!", "ERROR", 1);
+		return planet;
+	}
+	else
+	{
+		sscanf_s(buffer, "%lf", &(planet.mass));
+	}
+
+	GetDlgItemText(hWnd, IDC_EDIT_LIFE, buffer, BUFFERSIZE);
+	if (strlen(buffer) < 1)
+	{
+		MessageBox(0, "Please provide input!", "ERROR", 1);
+		return planet;
+	}
+	else
+	{
+		sscanf_s(buffer, "%lf", &(planet.life));
+	}
+
+	SetDlgItemText(hWnd, IDC_EDIT_NAME, "\0");
+	SetDlgItemText(hWnd, IDC_EDIT_XPOSITION, "\0");
+	SetDlgItemText(hWnd, IDC_EDIT_YPOSITION, "\0");
+	SetDlgItemText(hWnd, IDC_EDIT_XVELOCITY, "\0");
+	SetDlgItemText(hWnd, IDC_EDIT_YVELOCITY, "\0");
+	SetDlgItemText(hWnd, IDC_EDIT_MASS, "\0");
+	SetDlgItemText(hWnd, IDC_EDIT_LIFE, "\0");
+
+	return planet;
+}
+
+void refreshLocalPlanetList(HWND hWnd)
+{
+	//IDC_LIST_LOCAL
+	SendMessage(hWnd, LB_ADDSTRING, IDC_LIST_LOCAL, head->data.name);
 
 }
