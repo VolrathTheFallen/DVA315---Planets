@@ -186,7 +186,7 @@ void __stdcall checkMailslot(LPVOID mailParams)
 	int res;
 	checkMailParams* params = (checkMailParams*)mailParams;
 	serverMessage srvMsg;
-	char message[256];
+	char message[256] = {'\0'};
 
 	while (1)
 	{
@@ -194,11 +194,11 @@ void __stdcall checkMailslot(LPVOID mailParams)
 
 		if (res != 0) // We read something from the mailslot
 		{
-			strcat(message, srvMsg.name);
+			strcat_s(message, sizeof(message), srvMsg.name);
 			if (srvMsg.error == 0)
-				strcat(message, " died from old age");
+				strcat_s(message, sizeof(message), " died from old age");
 			else if (srvMsg.error == 1)
-				strcat(message, " died from going out of bounds");
+				strcat_s(message, sizeof(message), " died from going out of bounds");
 
 			MessageBox(0, message, "Server Message", 1);
 			*(params->nPlanetsptr) = *(params->nPlanetsptr) - 1;
