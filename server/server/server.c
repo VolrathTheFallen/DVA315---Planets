@@ -70,6 +70,11 @@ HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
 							/*       initializes a bunch of things.                     */
 							/* NOTE: In windows WinMain is the start function, not main */
 
+typedef struct serverMessage{
+	char name[20];
+	int error;
+}serverMessage;
+
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow ) {
 
 	HWND hWnd;
@@ -250,8 +255,9 @@ int planetExists(planet_type *planet) {
 	a message will be sent to the client that created the planet with the reason of termination. */
 int killPlanet(planet_type *planet, int flag) 
 {
-	char  clientMailslotName[256], mailSlotString[18] = "\\\\.\\mailslot\\", message[256], name[30], procIDString[30];
+	char  clientMailslotName[256], mailSlotString[18] = "\\\\.\\mailslot\\", procIDString[30];
 	HANDLE clientMailslot;
+	serverMessage message;
 
 	if (planetExists(planet))
 	{
@@ -266,17 +272,13 @@ int killPlanet(planet_type *planet, int flag)
 		}
 
 		EnterCriticalSection(&dbAccess);
-		strcpy_s(name, sizeof(planet->name), planet->name);
+		strcpy_s(message.name, sizeof(planet->name), planet->name);
 		if (removeNode(planet)) 
 		{
 			// Send Message to client: Planet removed
-			if (flag == 1)
-				wsprintf(message, "%s died from going out of bounds.",  name);
-				
-			else if (flag == 0)
-				wsprintf(message, "%s died from old age.", name);
+			message.error = flag;
 
-			mailslotWrite(clientMailslot, message, sizeof(message));
+			mailslotWrite(clientMailslot, (void *)&message, sizeof(serverMessage));
 
 			LeaveCriticalSection(&dbAccess);
 
