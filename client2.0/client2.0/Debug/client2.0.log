@@ -1,9 +1,9 @@
-﻿Build started 2016-02-03 11:51:13.
+﻿Build started 2016-02-03 12:18:32.
      1>Project "D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\client2.0\client2.0.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          D:\Program2\Visual Studio Professional 2013\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt empty.c
          empty.c
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(52): warning C4133: 'function' : incompatible types - from 'unsigned short [17]' to 'LPCSTR'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(44): warning C4133: 'function' : incompatible types - from 'unsigned short [17]' to 'LPCSTR'
        Link:
          D:\Program2\Visual Studio Professional 2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\Debug\client2.0.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\Debug\client2.0.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\Debug\client2.0.lib" /MACHINE:X86 Debug\client.res
          Debug\empty.obj
@@ -13,4 +13,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.35
+Time Elapsed 00:00:00.38

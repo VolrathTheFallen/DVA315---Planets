@@ -13,31 +13,23 @@ HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow) {
 
 	MSG msg;
+	BOOL ret;
 	HWND monitorDialog, mainDialog;
 
-	mainDialog = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_CREATE), NULL, MainWndProc);
+	mainDialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG_CREATE), NULL, MainWndProc);
 	if (mainDialog != NULL)
 		ShowWindow(mainDialog, SW_SHOW);
 	else 
 		MessageBox(NULL, "CreateDialog returned NULL", "Warning!", MB_OK | MB_ICONINFORMATION);
 
-	windowRefreshTimer(mainDialog, UPDATE_FREQ);
-
 	// create monitor dialog as child to Main dialog
 
-	monitorDialog = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_MONITOR), mainDialog, MonitorWndProc);
+	monitorDialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MONITOR), NULL, MonitorWndProc);
 	if (monitorDialog != NULL)
 		ShowWindow(monitorDialog, SW_SHOW);
 	else
 		MessageBox(NULL, "CreateDialog returned NULL", "Warning!", MB_OK | MB_ICONINFORMATION);
-
-	/* NOTE: When this timer expires a message will be sent to  */
-	/*       our callback function (MainWndProc).               */
-	windowRefreshTimer(monitorDialog, UPDATE_FREQ);
-
-	/* (the message processing loop that all windows applications must have) */
-	/* NOTE: just leave it as it is. */
-	BOOL ret;
+	
 
 	while ((ret = GetMessage(&msg, NULL, 0, 0)) != 0)
 	{
@@ -84,7 +76,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			return 0;
 	}
 
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	return FALSE;// DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 LRESULT CALLBACK MonitorWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) 
@@ -100,5 +92,5 @@ LRESULT CALLBACK MonitorWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 			return 0;
 	}
 
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	return FALSE;// DefWindowProc(hWnd, msg, wParam, lParam);
 }
