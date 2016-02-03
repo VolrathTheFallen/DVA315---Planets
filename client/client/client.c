@@ -19,6 +19,11 @@ typedef struct checkMailParams{
 	HANDLE clientMailslot;
 }checkMailParams;
 
+typedef struct serverMessage {
+	char name[20];
+	int error;
+}serverMessage;
+
 planet_type* getUserInput(void);
 void __stdcall checkMailslot(int *nPlanetsptr, HANDLE clientMailslot);
 
@@ -30,6 +35,7 @@ void main(void) {
 	planet_type *planet;
 	int nPlanets = 0;
 	checkMailParams mailParams;
+	serverMessage srvMsg;
 	mailParams.nPlanetsptr = &nPlanets;
 
 
@@ -178,16 +184,23 @@ planet_type* getUserInput(void)
 void __stdcall checkMailslot(LPVOID mailParams)
 {
 	int res;
-	char buffer[256];
 	checkMailParams* params = (checkMailParams*)mailParams;
+	serverMessage srvMsg;
+	char message[256];
 
 	while (1)
 	{
-		res = mailslotRead(params->clientMailslot, buffer, 256); // Attempts to read from mailslot
+		res = mailslotRead(params->clientMailslot, &srvMsg, sizeof(srvMsg)); // Attempts to read from mailslot
 
 		if (res != 0) // We read something from the mailslot
 		{
-			MessageBox(0, buffer, "Server Message", 1);
+			strcat(message, srvMsg.name);
+			if (srvMsg.error == 0)
+				strcat(message, " died from old age");
+			else if (srvMsg.error == 1)
+				strcat(message, " died from going out of bounds");
+
+			MessageBox(0, message, "Server Message", 1);
 			*(params->nPlanetsptr) = *(params->nPlanetsptr) - 1;
 			if (*(params->nPlanetsptr) == 0)
 				return;	//Close thread if no active planets
