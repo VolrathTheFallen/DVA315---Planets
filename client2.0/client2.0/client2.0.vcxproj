@@ -64,10 +64,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="doublylinkedlist.c" />
     <ClCompile Include="empty.c" />
     <ClCompile Include="wrapper.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="doublylinkedlist.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="wrapper.h" />
   </ItemGroup>
