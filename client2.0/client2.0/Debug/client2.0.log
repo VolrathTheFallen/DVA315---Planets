@@ -1,45 +1,57 @@
-﻿Build started 2016-02-04 15:36:50.
-     1>Project "C:\Users\Admin\Source\Repos\DVA315---Planets\client2.0\client2.0\client2.0.vcxproj" on node 2 (Build target(s)).
+﻿Build started 2016-02-04 16:23:10.
+     1>Project "D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\client2.0\client2.0.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt empty.c
+         D:\Program2\Visual Studio Professional 2013\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt empty.c
          empty.c
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(7): warning C4005: 'MAX_PATH' : macro redefinition
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(7): warning C4005: 'MAX_PATH' : macro redefinition
                  c:\program files (x86)\windows kits\8.1\include\shared\minwindef.h(60) : see previous definition of 'MAX_PATH'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(54): warning C4133: 'function' : incompatible types - from 'unsigned short [17]' to 'LPCSTR'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(103): warning C4020: 'addSentPlanetsToSentList' : too many actual parameters
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(146): warning C4047: 'function' : 'planet_type *' differs in levels of indirection from 'planet_type **'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(146): warning C4024: 'planetExists' : different types for formal and actual parameter 1
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(238): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(238): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(254): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(254): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(254): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(254): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(255): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(255): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(255): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(255): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(275): warning C4047: 'function' : 'LPDWORD' differs in levels of indirection from 'LPWORD *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(275): warning C4024: 'WriteFile' : different types for formal and actual parameter 4
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(303): warning C4047: 'function' : 'LPDWORD' differs in levels of indirection from 'LPWORD *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(303): warning C4024: 'WriteFile' : different types for formal and actual parameter 4
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(349): warning C4090: 'function' : different 'const' qualifiers
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(382): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(382): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(382): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(382): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(383): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(383): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(383): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(383): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
-     1>c:\users\admin\source\repos\dva315---planets\client2.0\client2.0\empty.c(380): warning C4101: 'result' : unreferenced local variable
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(57): warning C4133: 'function' : incompatible types - from 'unsigned short [17]' to 'LPCSTR'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(150): warning C4047: 'function' : 'planet_type *' differs in levels of indirection from 'planet_type **'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(150): warning C4024: 'planetExists' : different types for formal and actual parameter 1
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(242): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(242): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(256): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(256): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(256): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(256): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(257): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(257): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(257): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(257): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(276): warning C4047: 'function' : 'LPDWORD' differs in levels of indirection from 'LPWORD *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(276): warning C4024: 'WriteFile' : different types for formal and actual parameter 4
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(298): warning C4047: 'function' : 'LPDWORD' differs in levels of indirection from 'LPWORD *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(298): warning C4024: 'WriteFile' : different types for formal and actual parameter 4
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(338): warning C4090: 'function' : different 'const' qualifiers
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(371): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(371): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(371): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(371): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(372): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(372): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(372): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(372): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(369): warning C4101: 'result' : unreferenced local variable
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(415): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(415): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(415): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(415): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(416): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(416): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(416): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(416): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(450): warning C4133: 'function' : incompatible types - from 'Node *' to 'planet_type *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(510): warning C4047: 'function' : 'WPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(510): warning C4024: 'SendMessageA' : different types for formal and actual parameter 3
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(510): warning C4047: 'function' : 'LPARAM' differs in levels of indirection from 'void *'
+     1>d:\skola\computer science\dva315 operating systems\dva315---planets\client2.0\client2.0\empty.c(510): warning C4024: 'SendMessageA' : different types for formal and actual parameter 4
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Admin\Source\Repos\DVA315---Planets\client2.0\Debug\client2.0.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Admin\Source\Repos\DVA315---Planets\client2.0\Debug\client2.0.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Admin\Source\Repos\DVA315---Planets\client2.0\Debug\client2.0.lib" /MACHINE:X86 Debug\client.res
+         D:\Program2\Visual Studio Professional 2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\Debug\client2.0.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\Debug\client2.0.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\Debug\client2.0.lib" /MACHINE:X86 Debug\client.res
          Debug\doublylinkedlist.obj
          Debug\empty.obj
          Debug\wrapper.obj
-         client2.0.vcxproj -> C:\Users\Admin\Source\Repos\DVA315---Planets\client2.0\Debug\client2.0.exe
-     1>Done Building Project "C:\Users\Admin\Source\Repos\DVA315---Planets\client2.0\client2.0\client2.0.vcxproj" (Build target(s)).
+         client2.0.vcxproj -> D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\Debug\client2.0.exe
+     1>Done Building Project "D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\client2.0\client2.0\client2.0.vcxproj" (Build target(s)).
 
 Build succeeded.
 

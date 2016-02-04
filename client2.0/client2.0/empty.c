@@ -14,6 +14,9 @@ int planetExists(planet_type *);
 int exportPlanets(HWND hWnd);
 int importPlanets(HWND hWnd);
 int addSentPlanetsToSentList(HWND hWnd);
+int sendSelectedPlanetsToServer(HWND hWnd);
+void removeFromListbox(HWND hWnd, int listbox, int id);
+void clearListbox(HWND hwnd, int listbox);
 
 
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
@@ -100,7 +103,8 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 		case ID_BUTTON_SEND:
 			// MessageBox(NULL, "Klicked send button", "Test", 0);
-			addSentPlanetsToSentList(hWnd, IDC_LIST_SENT2);
+			sendSelectedPlanetsToServer(hWnd);
+			//addSentPlanetsToSentList(hWnd, IDC_LIST_SENT2);
 
 			break;
 		case ID_BUTTON_CREATE: // Creates planet out of information in textboxes in mainDialog
@@ -249,8 +253,6 @@ int exportPlanets(HWND hWnd)
 
 	exportFile = OpenFileDialog("", GENERIC_WRITE, OPEN_ALWAYS);
 
-
-	//FILE *file = fopen_s(ofn.lpstrFile, ofn.lpstrFileTitle, "wb");
 	int selCount = SendMessage(localListBox, LB_GETSELCOUNT, NULL, NULL);
 	int listCount = SendMessage(localListBox, LB_GETCOUNT, NULL, NULL);
 
@@ -271,7 +273,6 @@ int exportPlanets(HWND hWnd)
 					{
 						if (strcmp(iterator->data.name, buffer) == 0)
 						{
-							//fwrite(&(iterator->data), sizeof(planet_type), 1, exportFile);
 							result = WriteFile(exportFile, (LPCVOID)&(iterator->data), sizeof(planet_type), &bytesWritten, (LPOVERLAPPED)NULL);
 							if (!result || bytesWritten <= 0)
 							{
@@ -279,15 +280,11 @@ int exportPlanets(HWND hWnd)
 								return 0;
 							}
 						}
-
 						// Continue iteration
 						iterator = iterator->next;
-					
 					}
 					iterator = head;
-				
 				}
-
 			}
 		}
 		else
@@ -298,8 +295,6 @@ int exportPlanets(HWND hWnd)
 
 				while (iterator != NULL)
 				{
-
-					//fwrite(&(iterator->data), sizeof(planet_type), 1, exportFile);
 					result = WriteFile(exportFile, (LPCVOID)&(iterator->data), sizeof(planet_type), &bytesWritten, (LPOVERLAPPED)NULL);
 					if (bytesWritten <= 0)
 					{
@@ -311,13 +306,9 @@ int exportPlanets(HWND hWnd)
 						MessageBox(0, "WriteFile failed", "Error", 1);
 						return 0;
 					}
-
 					iterator = iterator->next;
 				}
-
 			}
-
-
 		}
 
 		MessageBox(0, "Planets saved to file", "Success!", 1);
@@ -343,8 +334,6 @@ int importPlanets(HWND hWnd)
 
 	if (importFile)
 	{
-
-
 		do {
 			result = ReadFile(importFile, (LPCVOID)buffer, (DWORD)sizeof(planet_type), (LPDWORD)&bytesRead, (LPOVERLAPPED)NULL);
  			if (!result)
@@ -393,7 +382,7 @@ int addSentPlanetsToSentList(HWND hWnd) {
 			{
 				SendMessage(localListBox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
 
-				addToListBox(hWnd, buffer, IDC_LIST_SENT2);
+				addToListBox(GetDlgItem(hWnd, IDD_DIALOG_MONITOR), buffer, IDC_LIST_SENT2);
 
 			}
 
@@ -405,15 +394,125 @@ int addSentPlanetsToSentList(HWND hWnd) {
 	}
 	return 1;
 
-
-
-
 }
 
+/*Sends the local planets to the server, returns 1 if succesful, 0 if not*/
+int sendSelectedPlanetsToServer(HWND hWnd)
+{
+	HANDLE serverMailslot, localListBox = GetDlgItem(hWnd, IDC_LIST_LOCAL);
+	struct Node *iterator, *toDelete;
+	int res;
+	char buffer[BUFFERSIZE];
+
+	serverMailslot = mailslotConnect("\\\\.\\mailslot\\serverMailslot");
+
+	if (serverMailslot == INVALID_HANDLE_VALUE)
+	{
+		MessageBox(0, "Failed to get a handle to the server mailslot!!!\nHave you started the server?\n", "ERROR", MB_OK);
+		return 0;
+	}
+
+	int selCount = SendMessage(localListBox, LB_GETSELCOUNT, NULL, NULL);
+	int listCount = SendMessage(localListBox, LB_GETCOUNT, NULL, NULL);
+
+	if (head != NULL)
+	{
+		if (selCount > 0)
+		{
+			for (int i = 0; i < listCount; i++)
+			{
+				iterator = head;
+
+				if (SendMessage(localListBox, LB_GETSEL, i, 0) > 0) // LB_GETSELITEMS for list of items
+				{
+					SendMessage(localListBox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
+
+					// Loop through all planets in local list
+					while (iterator != NULL)
+					{
+						if (strcmp(iterator->data.name, buffer) == 0)
+						{
+							/*res = mailslotWrite(serverMailslot, (void*)&(iterator->data), sizeof(planet_type));
+							if (res == 0)
+							{
+								MessageBox(0, "Error writing to serverMailslot!", "ERROR", MB_OK);
+								return 0;
+							}
+							*/
+							addToListBox(GetDlgItem(hWnd, IDD_DIALOG_MONITOR), iterator->data.name, IDC_LIST_SENT2);
+							removeFromListbox(hWnd, IDC_LIST_LOCAL, i);
+							toDelete = iterator;
+							break;
+						}
+						// Continue iteration
+						iterator = iterator->next;
+					}
+					removeNode(toDelete);
+					toDelete = NULL;
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < listCount; i++)
+			{
+				iterator = head;
+
+				while (iterator != NULL)
+				{
+					res = mailslotWrite(serverMailslot, (void*)&(iterator->data), sizeof(planet_type));
+					if (res == 0)
+					{
+						MessageBox(0, "Error writing to serverMailslot!", "ERROR", MB_OK);
+						return 0;
+					}
+
+					addToListBox(GetDlgItem(hWnd, IDD_DIALOG_MONITOR), iterator->data.name, IDC_LIST_SENT2);
+
+					iterator = iterator->next;
+				}
+			}
+
+			clearListbox(hWnd, IDC_LIST_LOCAL);
+
+			/*If successful deallocate linked list*/
+			iterator = head;
+			while (iterator != NULL)
+			{
+				if (iterator->next == NULL)
+				{
+					free(iterator);
+					iterator = NULL;
+					break;
+				}
+
+				iterator = iterator->next;
+				free(iterator->prev);
+			}
+
+			if (head != NULL)
+				head = NULL;
+		}
+	}
+
+	return 1;
+}
+
+void removeFromListbox(HWND hWnd, int listbox, int id)
+{
+	HWND listBox = GetDlgItem(hWnd, listbox);
+	SendMessage(listBox, LB_DELETESTRING, (WPARAM)id, (LPARAM)NULL);
+}
+
+void clearListbox(HWND hWnd, int listbox)
+{
+	HWND listBox = GetDlgItem(hWnd, listbox);
+	SendMessage(listBox, LB_RESETCONTENT, NULL, NULL);
+}
 
 // Looks for planet name in linked list, returns 1 if found and 0 if not.
-int planetExists(planet_type *planet) {
-
+int planetExists(planet_type *planet) 
+{
 	struct Node *iterator = head;
 
 	if (iterator == NULL) {
