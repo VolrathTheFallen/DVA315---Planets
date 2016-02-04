@@ -104,7 +104,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case ID_BUTTON_SEND:
 			// MessageBox(NULL, "Klicked send button", "Test", 0);
 			sendSelectedPlanetsToServer(hWnd);
-			//addSentPlanetsToSentList(hWnd, IDC_LIST_SENT2);
+			//addSentPlanetsToSentList(hWnd, IDC_LIST_SENT);
 
 			break;
 		case ID_BUTTON_CREATE: // Creates planet out of information in textboxes in mainDialog
@@ -382,7 +382,7 @@ int addSentPlanetsToSentList(HWND hWnd) {
 			{
 				SendMessage(localListBox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
 
-				addToListBox(GetDlgItem(hWnd, IDD_DIALOG_MONITOR), buffer, IDC_LIST_SENT2);
+				addToListBox(hWnd, buffer, IDC_LIST_SENT);
 
 			}
 
@@ -439,7 +439,7 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 								return 0;
 							}
 							*/
-							addToListBox(GetDlgItem(hWnd, IDD_DIALOG_MONITOR), iterator->data.name, IDC_LIST_SENT2);
+							addToListBox(hWnd, iterator->data.name, IDC_LIST_SENT);
 							removeFromListbox(hWnd, IDC_LIST_LOCAL, i);
 							toDelete = iterator;
 							break;
@@ -467,7 +467,7 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 						return 0;
 					}
 
-					addToListBox(GetDlgItem(hWnd, IDD_DIALOG_MONITOR), iterator->data.name, IDC_LIST_SENT2);
+					addToListBox(hWnd, iterator->data.name, IDC_LIST_SENT);
 
 					iterator = iterator->next;
 				}
