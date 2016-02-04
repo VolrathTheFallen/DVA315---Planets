@@ -21,13 +21,13 @@ void clearListbox(HWND hwnd, int listbox);
 
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
 /* we need it to access the window for printing and drawin */
-
+HWND monitorDialog, mainDialog;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow) {
 
 	MSG msg;
 	BOOL ret;
-	HWND monitorDialog, mainDialog;
+	
 
 	mainDialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG_CREATE), NULL, MainWndProc);
 	if (mainDialog != NULL)
@@ -439,7 +439,7 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 								return 0;
 							}
 							*/
-							addToListBox(hWnd, iterator->data.name, IDC_LIST_SENT);
+							addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
 							removeFromListbox(hWnd, IDC_LIST_LOCAL, i);
 							toDelete = iterator;
 							break;
@@ -467,7 +467,7 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 						return 0;
 					}
 
-					addToListBox(hWnd, iterator->data.name, IDC_LIST_SENT);
+					addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
 
 					iterator = iterator->next;
 				}
