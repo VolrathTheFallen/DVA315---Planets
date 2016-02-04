@@ -432,13 +432,13 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 					{
 						if (strcmp(iterator->data.name, buffer) == 0)
 						{
-							/*res = mailslotWrite(serverMailslot, (void*)&(iterator->data), sizeof(planet_type));
+							res = mailslotWrite(serverMailslot, (void*)&(iterator->data), sizeof(planet_type));
 							if (res == 0)
 							{
 								MessageBox(0, "Error writing to serverMailslot!", "ERROR", MB_OK);
 								return 0;
 							}
-							*/
+							
 							addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
 							removeFromListbox(hWnd, IDC_LIST_LOCAL, i);
 							toDelete = iterator;

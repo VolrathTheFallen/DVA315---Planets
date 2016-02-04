@@ -1,26 +1,9 @@
-﻿Build started 2016-02-03 09:01:56.
-     1>Project "D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\server\server\server.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         D:\Program2\Visual Studio Professional 2013\VC\bin\CL.exe /c /I"C:\Users\Admin\Source\Repos\DVA315---Planets\server\server" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TC /analyze- /errorReport:prompt server.c
-         server.c
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(156): warning C4013: 'planetExists' undefined; assuming extern returning int
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(160): warning C4133: 'function' : incompatible types - from 'void (__stdcall *)(planet_type *)' to 'LPTHREAD_START_ROUTINE'
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(135): warning C4101: 'inputString' : unreferenced local variable
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(131): warning C4101: 'buffer' : unreferenced local variable
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(177): warning C4101: 'yF' : unreferenced local variable
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(177): warning C4101: 'Ftot' : unreferenced local variable
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(177): warning C4101: 'xF' : unreferenced local variable
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(271): warning C4033: 'killPlanet' must return a value
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(258): warning C4101: 'procIDString' : unreferenced local variable
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(335): warning C4244: 'function' : conversion from 'double' to 'int', possible loss of data
-     1>d:\skola\computer science\dva315 operating systems\dva315---planets\server\server\server.c(292): warning C4715: 'killPlanet' : not all control paths return a value
-       Link:
-         D:\Program2\Visual Studio Professional 2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\server\Debug\server.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\server\Debug\server.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\server\Debug\server.lib" /MACHINE:X86 Debug\doublylinkedlist.obj
-         Debug\server.obj
-         Debug\wrapper.obj
-         server.vcxproj -> D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\server\Debug\server.exe
-     1>Done Building Project "D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\server\server\server.vcxproj" (Build target(s)).
+﻿Build started 2016-02-04 21:42:58.
+     1>Project "C:\Users\Admin\Source\Repos\DVA315---Planets\server\server\server.vcxproj" on node 2 (Build target(s)).
+     1>Link:
+         server.vcxproj -> C:\Users\Admin\Source\Repos\DVA315---Planets\server\Debug\server.exe
+     1>Done Building Project "C:\Users\Admin\Source\Repos\DVA315---Planets\server\server\server.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.16
+Time Elapsed 00:00:00.02
