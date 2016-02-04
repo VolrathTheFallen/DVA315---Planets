@@ -187,6 +187,8 @@ HANDLE OpenFileDialog(char* string, DWORD accessMode, DWORD howToCreate)
 	OPENFILENAME opf;
 	char szFileName[_MAX_PATH]="";
 
+	ZeroMemory(&opf, sizeof(opf));
+
 	opf.Flags				= OFN_SHOWHELP | OFN_OVERWRITEPROMPT; 
 	opf.lpstrDefExt			= "dat";
 	opf.lpstrCustomFilter	= NULL;

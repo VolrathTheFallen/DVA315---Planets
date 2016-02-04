@@ -230,67 +230,90 @@ void AddToListBox(HWND hWnd, char *msg, int listBox)
 
 int exportPlanets(HWND hWnd)
 {
-	OPENFILENAME ofn;
-	//char fileName[MAX_PATH] = "";
 	HANDLE localListBox = GetDlgItem(hWnd, IDC_LIST_LOCAL);
+	HANDLE exportFile;
 	char buffer[BUFFERSIZE];
+	LPWORD bytesWritten = 0;
+	BOOL result;
 
-	int selInd = -1;
 
-	ZeroMemory(&ofn, sizeof(ofn));
+	exportFile = OpenFileDialog("", GENERIC_WRITE, OPEN_ALWAYS);
 
-	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = hWnd;
-	ofn.lpstrFilter = "Planet Files (*.dat)\0*.dat\0";
-	ofn.lpstrFile = "";// fileName;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrDefExt = "dat";
-	ofn.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT;
 
-	if (GetSaveFileName(&ofn))
+	//FILE *file = fopen_s(ofn.lpstrFile, ofn.lpstrFileTitle, "wb");
+	int selCount = SendMessage(localListBox, LB_GETSELCOUNT, NULL, NULL);
+	int listCount = SendMessage(localListBox, LB_GETCOUNT, NULL, NULL);
+
+	if (exportFile)
 	{
-		FILE *file = fopen_s(ofn.lpstrFile, ofn.lpstrFileTitle, "wb");
-		int selCount = SendMessage(localListBox, LB_GETSELCOUNT, NULL, NULL);
-		int listCount = SendMessage(localListBox, LB_GETCOUNT, NULL, NULL);
+		struct Node *iterator = head;
 
-		if (file)
+		if (selCount > 0)
 		{
-			if (selCount > 0)
+			for (int i = 0; i < listCount; i++)
 			{
-				for (int i = 0; i < listCount; i++)
+				if (SendMessage(localListBox, LB_GETSEL, i, 0) > 0) // LB_GETSELITEMS for list of items
 				{
-					if (SendMessage(localListBox, LB_GETSEL, i, 0) > 0) // LB_GETSELITEMS for list of items
-					{
-						SendMessage(localListBox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
+					SendMessage(localListBox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
 
-						// Loop through all planets in local list
-						struct Node *iterator = head;
-						while (iterator != NULL)
+					// Loop through all planets in local list
+					while (iterator != NULL)
+					{
+						if (strcmp(iterator->data.name, buffer) == 0)
 						{
-							if (strcmp(iterator->data.name, buffer) == 0)
+							//fwrite(&(iterator->data), sizeof(planet_type), 1, exportFile);
+							result = WriteFile(exportFile, (LPCVOID)&(iterator->data), sizeof(planet_type), &bytesWritten, (LPOVERLAPPED)NULL);
+							if (!result || bytesWritten <= 0)
 							{
-								fwrite(&(iterator->data), sizeof(planet_type), 1, file);
+								MessageBox(0, "WriteFile failed.", "Error", 1);
+								return 0;
 							}
-							// Continue iteration
-							iterator = iterator->next;
 						}
+
+						// Continue iteration
+						iterator = iterator->next;
+					
 					}
+				
 				}
-				MessageBox(0, "Planets saved to file", "Success!", 1);
+
 			}
-			else
+		}
+		else
+		{
+			for (int i = 0; i < listCount; i++)
 			{
-				struct Node *iterator = head;
+				SendMessage(localListBox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
+
 				while (iterator != NULL)
 				{
-					fwrite(&(iterator->data), sizeof(planet_type), 1, file);
+
+					//fwrite(&(iterator->data), sizeof(planet_type), 1, exportFile);
+					result = WriteFile(exportFile, (LPCVOID)&(iterator->data), sizeof(planet_type), &bytesWritten, (LPOVERLAPPED)NULL);
+					if (bytesWritten <= 0)
+					{
+						MessageBox(0, "bytesWritten = 0.", "Error", 1);
+						return 0;
+					}
+					if (!result)
+					{
+						MessageBox(0, "WriteFile failed", "Error", 1);
+						return 0;
+					}
+
 					iterator = iterator->next;
 				}
-				MessageBox(0, "Planets saved to file", "Success!", 1);
+
 			}
-			fclose(file);
+
+
 		}
+
+		MessageBox(0, "Planets saved to file", "Success!", 1);
+
+		CloseHandle(exportFile);
 	}
+	return 1;
 }
 
 // Looks for planet name in linked list, returns 1 if found and 0 if not.
