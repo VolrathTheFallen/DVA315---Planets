@@ -8,13 +8,17 @@
 
 LRESULT WINAPI MainWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT WINAPI MonitorWndProc(HWND, UINT, WPARAM, LPARAM);
-planet_type createPlanet(HWND hWnd);
-void AddToListBox(HWND hWnd, char *msg, int listBox);
+int createPlanet(HWND hWnd, planet_type *);
+void addToListBox(HWND hWnd, char *msg, int listBox);
 int planetExists(planet_type *);
 int exportPlanets(HWND hWnd);
+int importPlanets(HWND hWnd);
+int addSentPlanetsToSentList(HWND hWnd);
+
 
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
 /* we need it to access the window for printing and drawin */
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow) {
 
@@ -30,7 +34,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	// create monitor dialog as child to Main dialog
 
-	monitorDialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MONITOR), NULL, MonitorWndProc);
+	monitorDialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MONITOR), mainDialog, MonitorWndProc);
 	if (monitorDialog != NULL)
 		ShowWindow(monitorDialog, SW_SHOW);
 	else
@@ -87,20 +91,27 @@ LRESULT CALLBACK MonitorWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 {
+	planet_type planet;
+
 	switch (msg)
 	{
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
 		case ID_BUTTON_SEND:
-			MessageBox(NULL, "Klicked send button", "Test", 0);
+			// MessageBox(NULL, "Klicked send button", "Test", 0);
+			addSentPlanetsToSentList(hWnd, IDC_LIST_SENT2);
+
 			break;
 		case ID_BUTTON_CREATE: // Creates planet out of information in textboxes in mainDialog
-			InsertAtHead(createPlanet(hWnd)); //Add to DB
-			AddToListBox(hWnd, head->data.name, IDC_LIST_LOCAL);
+			if (createPlanet(hWnd, &planet) == 1) { // only insert to LL if createPlanet succeeded (that is, if all user input is valid)
+				InsertAtHead(planet); //Add to DB
+				addToListBox(hWnd, head->data.name, IDC_LIST_LOCAL);
+			}
 			break;
 		case ID_BUTTON_IMPORT:
-			MessageBox(NULL, "Klicked import button", "Test", 0);
+			//MessageBox(NULL, "Klicked import button", "Test", 0);
+			importPlanets(hWnd);
 			break;
 		case ID_BUTTON_EXPORT:
 			exportPlanets(hWnd);
@@ -119,28 +130,27 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;// DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-planet_type createPlanet(HWND hWnd)
+int createPlanet(HWND hWnd, planet_type *planet)
 {
 	char buffer[BUFFERSIZE] = {'\0'};
 
-	planet_type planet;
 
 	GetDlgItemText(hWnd, IDC_EDIT_NAME, buffer, BUFFERSIZE);
 	if (strlen(buffer) < 1)
 	{
 		MessageBox(0, "Please provide input!", "ERROR", 1);
-		return;
+		return 0;
 	}
 	else
 	{
 		if (!planetExists(&planet))
 		{
-			strcpy_s(planet.name, sizeof(planet.name), buffer);
+			strcpy_s(planet->name, sizeof(planet->name), buffer);
 		}
 		else
 		{
 			MessageBox(0, "Planet already exists!", "ERROR", 1);
-			return planet;
+			return 0;
 		}
 	}
 
@@ -148,66 +158,66 @@ planet_type createPlanet(HWND hWnd)
 	if (strlen(buffer) < 1)
 	{
 		MessageBox(0, "Please provide input!", "ERROR", 1);
-		return planet;
+		return 0;
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet.sx));
+		sscanf_s(buffer, "%lf", &(planet->sx));
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_YPOSITION, buffer, BUFFERSIZE);
 	if (strlen(buffer) < 1)
 	{
 		MessageBox(0, "Please provide input!", "ERROR", 1);
-		return planet;
+		return 0;
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet.sy));
+		sscanf_s(buffer, "%lf", &(planet->sy));
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_XVELOCITY, buffer, BUFFERSIZE);
 	if (strlen(buffer) < 1)
 	{
 		MessageBox(0, "Please provide input!", "ERROR", 1);
-		return planet;
+		return 0;
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet.vx));
+		sscanf_s(buffer, "%lf", &(planet->vx));
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_YVELOCITY, buffer, BUFFERSIZE);
 	if (strlen(buffer) < 1)
 	{
 		MessageBox(0, "Please provide input!", "ERROR", 1);
-		return planet;
+		return 0;
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet.vy));
+		sscanf_s(buffer, "%lf", &(planet->vy));
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_MASS, buffer, BUFFERSIZE);
 	if (strlen(buffer) < 1)
 	{
 		MessageBox(0, "Please provide input!", "ERROR", 1);
-		return planet;
+		return 0;
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet.mass));
+		sscanf_s(buffer, "%lf", &(planet->mass));
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_LIFE, buffer, BUFFERSIZE);
 	if (strlen(buffer) < 1)
 	{
 		MessageBox(0, "Please provide input!", "ERROR", 1);
-		return planet;
+		return 0;
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet.life));
+		sscanf_s(buffer, "%lf", &(planet->life));
 	}
 
 	SetDlgItemText(hWnd, IDC_EDIT_NAME, "\0");
@@ -218,10 +228,10 @@ planet_type createPlanet(HWND hWnd)
 	SetDlgItemText(hWnd, IDC_EDIT_MASS, "\0");
 	SetDlgItemText(hWnd, IDC_EDIT_LIFE, "\0");
 
-	return planet;
+	return 1;
 }
 
-void AddToListBox(HWND hWnd, char *msg, int listBox)
+void addToListBox(HWND hWnd, char *msg, int listBox)
 {
 	HWND hwndList = GetDlgItem(hWnd, listBox);
 
@@ -274,6 +284,7 @@ int exportPlanets(HWND hWnd)
 						iterator = iterator->next;
 					
 					}
+					iterator = head;
 				
 				}
 
@@ -315,6 +326,90 @@ int exportPlanets(HWND hWnd)
 	}
 	return 1;
 }
+
+int importPlanets(HWND hWnd)
+{
+	HANDLE localListBox = GetDlgItem(hWnd, IDC_LIST_LOCAL);
+	HANDLE importFile;
+	char buffer[BUFFERSIZE];
+	planet_type readPlanet;
+	DWORD bytesRead = 0;
+	BOOL result;
+	struct _OVERLAPPED lpOvr;
+	lpOvr.Offset = sizeof(planet_type);
+
+	importFile = OpenFileDialog("", GENERIC_READ, OPEN_ALWAYS);
+
+
+	if (importFile)
+	{
+
+
+		do {
+			result = ReadFile(importFile, (LPCVOID)buffer, (DWORD)sizeof(planet_type), (LPDWORD)&bytesRead, (LPOVERLAPPED)NULL);
+ 			if (!result)
+			{
+				MessageBox(0, "ReadFile failed.", "Error", 1);
+				return 0;
+			}
+			if (bytesRead > 0)
+			{
+				
+				memcpy(&readPlanet, buffer, sizeof(planet_type));
+				if (!planetExists(&readPlanet))
+				{
+					InsertAtHead(readPlanet);
+					addToListBox(hWnd, readPlanet.name, IDC_LIST_LOCAL);
+				}
+			}
+		} while (bytesRead > 0);
+
+
+		MessageBox(0, "Planets imported to ListBox", "Success!", 1);
+
+		CloseHandle(importFile);
+	}
+	return 1;
+}
+
+int addSentPlanetsToSentList(HWND hWnd) {
+
+	HANDLE localListBox = GetDlgItem(hWnd, IDC_LIST_LOCAL);
+	char buffer[BUFFERSIZE];
+	LPWORD bytesWritten = 0;
+	BOOL result;
+
+	int selCount = SendMessage(localListBox, LB_GETSELCOUNT, NULL, NULL);
+	int listCount = SendMessage(localListBox, LB_GETCOUNT, NULL, NULL);
+
+
+	struct Node *iterator = head;
+
+	if (selCount > 0)
+	{
+		for (int i = 0; i < listCount; i++)
+		{
+			if (SendMessage(localListBox, LB_GETSEL, i, 0) > 0) // LB_GETSELITEMS for list of items
+			{
+				SendMessage(localListBox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
+
+				addToListBox(hWnd, buffer, IDC_LIST_SENT2);
+
+			}
+
+		}
+		
+
+		MessageBox(0, "Added planets to sent to server list...", "Success!", 1);
+
+	}
+	return 1;
+
+
+
+
+}
+
 
 // Looks for planet name in linked list, returns 1 if found and 0 if not.
 int planetExists(planet_type *planet) {
