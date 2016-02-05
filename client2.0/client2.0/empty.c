@@ -568,6 +568,8 @@ void __stdcall checkMailslot(LPVOID clientMailslot)
 
 	while (1)
 	{
+		EnterCriticalSection(&CriticalSection);
+
 		res = mailslotRead(clientMailslot, &srvMsg, sizeof(srvMsg)); // Attempts to read from mailslot
 
 		if (res != 0) // We read something from the mailslot
@@ -586,10 +588,9 @@ void __stdcall checkMailslot(LPVOID clientMailslot)
 				SendMessage(sentListbox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
 				if (strcmp(buffer, srvMsg.name) == 0)
 				{
-					EnterCriticalSection(&CriticalSection);
 					removeFromListbox(monitorDialog, IDC_LIST_SENT, i);
 					addToListBox(monitorDialog, message, IDC_LIST_MESSAGES);
-					LeaveCriticalSection(&CriticalSection);
+					MessageBox(0, message, "died", 1);
 					
 					nPlanets--;
 					break;
@@ -597,6 +598,9 @@ void __stdcall checkMailslot(LPVOID clientMailslot)
 			}
 			ZeroMemory(message, sizeof(message));
 		}
-		Sleep(200);
+
+		LeaveCriticalSection(&CriticalSection);
+
+		
 	}
 }
