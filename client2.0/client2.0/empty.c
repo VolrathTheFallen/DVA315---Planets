@@ -2,6 +2,7 @@
 #include "wrapper.h"
 #include "resource.h"
 #include "doublylinkedlist.h"
+#include <stdlib.h>
 
 #define BUFFERSIZE 256
 #define MAX_PATH 128
@@ -361,8 +362,8 @@ int importPlanets(HWND hWnd)
 	return 1;
 }
 
-int addSentPlanetsToSentList(HWND hWnd) {
-
+int addSentPlanetsToSentList(HWND hWnd) 
+{
 	HANDLE localListBox = GetDlgItem(hWnd, IDC_LIST_LOCAL);
 	char buffer[BUFFERSIZE];
 	LPWORD bytesWritten = 0;
@@ -401,7 +402,7 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 {
 	HANDLE serverMailslot, localListBox = GetDlgItem(hWnd, IDC_LIST_LOCAL);
 	struct Node *iterator, *toDelete;
-	int res;
+	int res, test[10], *selectedBuffer = NULL, selectedBufferSize = 0;
 	char buffer[BUFFERSIZE];
 
 	serverMailslot = mailslotConnect("\\\\.\\mailslot\\serverMailslot");
@@ -419,58 +420,66 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 	{
 		if (selCount > 0)
 		{
-			for (int i = 0; i < listCount; i++)
+			selectedBufferSize = sizeof(int)*selCount;
+
+			selectedBuffer = malloc(selectedBufferSize); //Alloc buffer space
+			if (selectedBuffer == NULL)
 			{
-				iterator = head;
-
-				if (SendMessage(localListBox, LB_GETSEL, i, 0) > 0) // LB_GETSELITEMS for list of items
-				{
-					SendMessage(localListBox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
-
-					// Loop through all planets in local list
-					while (iterator != NULL)
-					{
-						if (strcmp(iterator->data.name, buffer) == 0)
-						{
-							res = mailslotWrite(serverMailslot, (void*)&(iterator->data), sizeof(planet_type));
-							if (res == 0)
-							{
-								MessageBox(0, "Error writing to serverMailslot!", "ERROR", MB_OK);
-								return 0;
-							}
-							
-							addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
-							removeFromListbox(hWnd, IDC_LIST_LOCAL, i);
-							toDelete = iterator;
-							break;
-						}
-						// Continue iteration
-						iterator = iterator->next;
-					}
-					removeNode(toDelete);
-					toDelete = NULL;
-				}
+				MessageBox(0, "Error allocating memory!", "ERROR", MB_OK);
+				return 0;
 			}
+			ZeroMemory(selectedBuffer, selectedBufferSize);
+
+			//SendMessage(localListBox, LB_GETSELITEMS, (WPARAM)selCount, (LPARAM)selectedBuffer);
+			SendMessage(localListBox, LB_GETSELITEMS, (WPARAM)10, (LPARAM)test);
+
+			int j = 0;
+			for (int i = 0; i < selCount; i++)
+			{
+				SendMessage(localListBox, LB_GETTEXT, (WPARAM)test[i-j], (LPARAM)buffer);
+				iterator = head;
+				// Loop through all planets in local list
+				while (iterator != NULL)
+				{
+					if (strcmp(iterator->data.name, buffer) == 0)
+					{
+						res = mailslotWrite(serverMailslot, (void*)&(iterator->data), sizeof(planet_type));
+						if (res == 0)
+						{
+							MessageBox(0, "Error writing to serverMailslot!", "ERROR", MB_OK);
+							return 0;
+						}
+						removeFromListbox(hWnd, IDC_LIST_LOCAL, test[i - j]);
+						j++;
+						addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
+						toDelete = iterator;
+						break;
+					}
+					// Continue iteration
+					iterator = iterator->next;
+				}
+				removeNode(toDelete);
+				toDelete = NULL;
+			}
+			//free(selectedBuffer);
 		}
 		else
 		{
-			for (int i = 0; i < listCount; i++)
+			
+			iterator = head;
+
+			while (iterator != NULL)
 			{
-				iterator = head;
-
-				while (iterator != NULL)
+				res = mailslotWrite(serverMailslot, (void*)&(iterator->data), sizeof(planet_type));
+				if (res == 0)
 				{
-					res = mailslotWrite(serverMailslot, (void*)&(iterator->data), sizeof(planet_type));
-					if (res == 0)
-					{
-						MessageBox(0, "Error writing to serverMailslot!", "ERROR", MB_OK);
-						return 0;
-					}
-
-					addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
-
-					iterator = iterator->next;
+					MessageBox(0, "Error writing to serverMailslot!", "ERROR", MB_OK);
+					return 0;
 				}
+
+				addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
+
+				iterator = iterator->next;
 			}
 
 			clearListbox(hWnd, IDC_LIST_LOCAL);
