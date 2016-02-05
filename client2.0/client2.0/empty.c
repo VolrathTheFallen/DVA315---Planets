@@ -7,6 +7,7 @@
 #define BUFFERSIZE 256
 #define MAX_PATH 128
 
+//Function prototypes
 LRESULT WINAPI MainWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT WINAPI MonitorWndProc(HWND, UINT, WPARAM, LPARAM);
 int createPlanet(HWND hWnd, planet_type *);
@@ -14,21 +15,52 @@ void addToListBox(HWND hWnd, char *msg, int listBox);
 int planetExists(planet_type *);
 int exportPlanets(HWND hWnd);
 int importPlanets(HWND hWnd);
-int addSentPlanetsToSentList(HWND hWnd);
 int sendSelectedPlanetsToServer(HWND hWnd);
 void removeFromListbox(HWND hWnd, int listbox, int id);
 void clearListbox(HWND hwnd, int listbox);
+void __stdcall checkMailslot(HANDLE clientMailslot);
 
-
+//Global variables
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
 /* we need it to access the window for printing and drawin */
 HWND monitorDialog, mainDialog;
+int nPlanets;
+char procIDString[30];
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow) {
+typedef struct serverMessage {
+	char name[20];
+	int error;
+}serverMessage;
 
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow) 
+{
+	HANDLE clientMailslot, checkMailThread;
 	MSG msg;
 	BOOL ret;
-	
+	char mailSlotString[18] = "\\\\.\\mailslot\\", clientMailslotName[256];
+	DWORD procID;
+
+	nPlanets = 0;
+
+	procID = GetCurrentProcessId();
+	if (procID == 0)	//Check if function successful
+	{
+		//Error getting process ID
+		return 0;
+	}
+
+	wsprintf(procIDString, "%d", procID);
+	wsprintf(clientMailslotName, "\\\\.\\mailslot\\%s", procIDString); //Generate clientMailSlotName
+
+	clientMailslot = mailslotCreate(clientMailslotName);
+
+	if (clientMailslot == INVALID_HANDLE_VALUE) 
+	{
+		printf("Failed to get a handle to the client mailslot!!!\n");
+		return 0;
+	}
+
+	checkMailThread = threadCreate(checkMailslot, (LPVOID)clientMailslot); 
 
 	mainDialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG_CREATE), NULL, MainWndProc);
 	if (mainDialog != NULL)
@@ -37,13 +69,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		MessageBox(NULL, "CreateDialog returned NULL", "Warning!", MB_OK | MB_ICONINFORMATION);
 
 	// create monitor dialog as child to Main dialog
-
 	monitorDialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG_MONITOR), mainDialog, MonitorWndProc);
 	if (monitorDialog != NULL)
 		ShowWindow(monitorDialog, SW_SHOW);
 	else
 		MessageBox(NULL, "CreateDialog returned NULL", "Warning!", MB_OK | MB_ICONINFORMATION);
-	
+
+	checkMailThread = threadCreate(checkMailslot, (LPVOID)clientMailslot);
 
 	while ((ret = GetMessage(&msg, NULL, 0, 0)) != 0)
 	{
@@ -60,6 +92,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		}
 	}
 
+	mailslotClose(clientMailslot);
 	return msg.wParam;
 }
 
@@ -362,41 +395,6 @@ int importPlanets(HWND hWnd)
 	return 1;
 }
 
-int addSentPlanetsToSentList(HWND hWnd) 
-{
-	HANDLE localListBox = GetDlgItem(hWnd, IDC_LIST_LOCAL);
-	char buffer[BUFFERSIZE];
-	LPWORD bytesWritten = 0;
-	BOOL result;
-
-	int selCount = SendMessage(localListBox, LB_GETSELCOUNT, NULL, NULL);
-	int listCount = SendMessage(localListBox, LB_GETCOUNT, NULL, NULL);
-
-
-	struct Node *iterator = head;
-
-	if (selCount > 0)
-	{
-		for (int i = 0; i < listCount; i++)
-		{
-			if (SendMessage(localListBox, LB_GETSEL, i, 0) > 0) // LB_GETSELITEMS for list of items
-			{
-				SendMessage(localListBox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
-
-				addToListBox(hWnd, buffer, IDC_LIST_SENT);
-
-			}
-
-		}
-		
-
-		MessageBox(0, "Added planets to sent to server list...", "Success!", 1);
-
-	}
-	return 1;
-
-}
-
 /*Sends the local planets to the server, returns 1 if succesful, 0 if not*/
 int sendSelectedPlanetsToServer(HWND hWnd)
 {
@@ -426,6 +424,7 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 			if (selectedBuffer == NULL)
 			{
 				MessageBox(0, "Error allocating memory!", "ERROR", MB_OK);
+				mailslotClose(serverMailslot);
 				return 0;
 			}
 			ZeroMemory(selectedBuffer, selectedBufferSize);
@@ -443,12 +442,15 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 				{
 					if (strcmp(iterator->data.name, buffer) == 0)
 					{
+						strcpy_s(iterator->data.pid, sizeof(iterator->data.pid), procIDString);
 						res = mailslotWrite(serverMailslot, (void*)&(iterator->data), sizeof(planet_type));
 						if (res == 0)
 						{
 							MessageBox(0, "Error writing to serverMailslot!", "ERROR", MB_OK);
+							mailslotClose(serverMailslot);
 							return 0;
 						}
+						nPlanets++;
 						removeFromListbox(hWnd, IDC_LIST_LOCAL, test[i - j]);
 						j++;
 						addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
@@ -470,13 +472,15 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 
 			while (iterator != NULL)
 			{
+				strcpy_s(iterator->data.pid, sizeof(iterator->data.pid), procIDString);
 				res = mailslotWrite(serverMailslot, (void*)&(iterator->data), sizeof(planet_type));
 				if (res == 0)
 				{
 					MessageBox(0, "Error writing to serverMailslot!", "ERROR", MB_OK);
+					mailslotClose(serverMailslot);
 					return 0;
 				}
-
+				nPlanets++;
 				addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
 
 				iterator = iterator->next;
@@ -504,6 +508,7 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 		}
 	}
 
+	mailslotClose(serverMailslot);
 	return 1;
 }
 
@@ -539,4 +544,49 @@ int planetExists(planet_type *planet)
 	}
 
 	return 0;
+}
+
+/***************************************
+* This function checks the mailslot    *
+* for messages from the server and     *
+* keeps track of the number of		   *
+* living planets created by the client *
+***************************************/
+void __stdcall checkMailslot(LPVOID clientMailslot)
+{
+	HWND sentListbox = GetDlgItem(monitorDialog, IDC_LIST_SENT);
+	int res, listCount = 0;
+	serverMessage srvMsg;
+	char message[256] = { '\0' }, buffer[BUFFERSIZE];
+
+	while (1)
+	{
+		res = mailslotRead(clientMailslot, &srvMsg, sizeof(srvMsg)); // Attempts to read from mailslot
+
+		if (res != 0) // We read something from the mailslot
+		{
+			strcat_s(message, sizeof(message), srvMsg.name);
+			if (srvMsg.error == 0)
+				strcat_s(message, sizeof(message), " died from old age");
+			else if (srvMsg.error == 1)
+				strcat_s(message, sizeof(message), " died from going out of bounds");
+
+
+			listCount = SendMessage(sentListbox, LB_GETCOUNT, NULL, NULL);
+
+			for (int i = 0; i < listCount; i++)
+			{
+				SendMessage(sentListbox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
+				if (strcmp(buffer, srvMsg.name) == 0)
+				{
+					removeFromListbox(monitorDialog, IDC_LIST_SENT, i);
+					addToListBox(monitorDialog, message, IDC_LIST_MESSAGES);
+					nPlanets--;
+					break;
+				}
+			}
+			ZeroMemory(message, sizeof(message));
+		}
+		Sleep(200);
+	}
 }

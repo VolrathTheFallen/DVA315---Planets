@@ -214,7 +214,7 @@ void __stdcall calculatePosition(planet_type *planet)
 
 		LeaveCriticalSection(&dbAccess);
 
-		if (planet->life == 0)
+		if (planet->life <= 0)
 		{
 			//Send message to client
 			killPlanet(planet, 0); //Kill 
