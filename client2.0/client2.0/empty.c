@@ -26,6 +26,8 @@ HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
 HWND monitorDialog, mainDialog;
 int nPlanets;
 char procIDString[30];
+CRITICAL_SECTION CriticalSection;
+
 
 typedef struct serverMessage {
 	char name[20];
@@ -41,6 +43,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	DWORD procID;
 
 	nPlanets = 0;
+
+	// Initialize the critical section one time only.
+	if (!InitializeCriticalSectionAndSpinCount(&CriticalSection, 0x00000400)) {
+		return;
+	}
 
 	procID = GetCurrentProcessId();
 	if (procID == 0)	//Check if function successful
@@ -579,8 +586,11 @@ void __stdcall checkMailslot(LPVOID clientMailslot)
 				SendMessage(sentListbox, LB_GETTEXT, (WPARAM)i, (LPARAM)buffer);
 				if (strcmp(buffer, srvMsg.name) == 0)
 				{
+					EnterCriticalSection(&CriticalSection);
 					removeFromListbox(monitorDialog, IDC_LIST_SENT, i);
 					addToListBox(monitorDialog, message, IDC_LIST_MESSAGES);
+					LeaveCriticalSection(&CriticalSection);
+					
 					nPlanets--;
 					break;
 				}

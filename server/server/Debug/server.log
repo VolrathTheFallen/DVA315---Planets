@@ -1,9 +1,9 @@
-﻿Build started 2016-02-05 15:47:24.
-     1>Project "D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\server\server\server.vcxproj" on node 2 (Build target(s)).
+﻿Build started 2016-02-05 16:18:39.
+     1>Project "C:\Users\Admin\Source\Repos\DVA315---Planets\server\server\server.vcxproj" on node 2 (Build target(s)).
      1>Link:
-         server.vcxproj -> D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\server\Debug\server.exe
-     1>Done Building Project "D:\Skola\Computer Science\DVA315 Operating Systems\DVA315---Planets\server\server\server.vcxproj" (Build target(s)).
+         server.vcxproj -> C:\Users\Admin\Source\Repos\DVA315---Planets\server\Debug\server.exe
+     1>Done Building Project "C:\Users\Admin\Source\Repos\DVA315---Planets\server\server\server.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.02
+Time Elapsed 00:00:00.03
