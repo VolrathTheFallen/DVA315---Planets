@@ -601,6 +601,8 @@ void __stdcall checkMailslot(LPVOID clientMailslot)
 				strcat_s(message, sizeof(message), " died from old age");
 			else if (srvMsg.error == 1)
 				strcat_s(message, sizeof(message), " died from going out of bounds");
+			else if (srvMsg.error == 2)
+				strcat_s(message, sizeof(message), " already exists on the server");
 
 
 			listCount = SendMessage(sentListbox, LB_GETCOUNT, NULL, NULL);

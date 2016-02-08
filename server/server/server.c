@@ -48,9 +48,9 @@ DWORD WINAPI mailThread(LPVOID);
 CRITICAL_SECTION dbAccess;
 
 // Function prototypes
-void __stdcall calculatePosition(planet_type *planet);
+void __stdcall calculatePosition(planet_type *);
 int killPlanet(planet_type *, int);
-
+void sendErrorToCreator(planet_type *, int );
 
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
 				/* we need it to access the window for printing and drawin */
@@ -158,6 +158,10 @@ DWORD WINAPI mailThread(LPVOID arg) {
 				InsertAtHead(*planet);
 				LeaveCriticalSection(&dbAccess);
 				threadCreate(calculatePosition, &(head->data));
+			}
+			else
+			{
+				sendErrorToCreator(planet, 2);
 			}
 		}
 		else {
@@ -290,6 +294,32 @@ int killPlanet(planet_type *planet, int flag)
 	}
 	else
 		return 0;
+}
+
+void sendErrorToCreator(planet_type *planet, int flag)
+{
+	char  clientMailslotName[256], mailSlotString[18] = "\\\\.\\mailslot\\", procIDString[30];
+	HANDLE clientMailslot;
+	serverMessage message;
+
+
+	wsprintf(clientMailslotName, "\\\\.\\mailslot\\%s", planet->pid); //Generate clientMailSlotName
+
+
+	clientMailslot = mailslotConnect(clientMailslotName);
+	if (clientMailslot == INVALID_HANDLE_VALUE)
+	{
+		MessageBox(0, "Failed to get a handle to the client mailslot!!!", "", 1);
+		return;
+	}
+
+	strcpy_s(message.name, sizeof(planet->name), planet->name);
+
+	// Send Message to client: Planet removed
+	message.error = flag;
+
+	mailslotWrite(clientMailslot, (void *)&message, sizeof(serverMessage));
+
 }
 
 
