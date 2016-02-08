@@ -19,6 +19,7 @@ int sendSelectedPlanetsToServer(HWND hWnd);
 void removeFromListbox(HWND hWnd, int listbox, int id);
 void clearListbox(HWND hwnd, int listbox);
 void __stdcall checkMailslot(HANDLE clientMailslot);
+void updatePlanetCountView();
 
 //Global variables
 HDC hDC;		/* Handle to Device Context, gets set 1st time in MainWndProc */
@@ -44,6 +45,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	nPlanets = 0;
 
+	updatePlanetCountView();
+
 	// Initialize the critical section one time only.
 	if (!InitializeCriticalSectionAndSpinCount(&CriticalSection, 0x00000400)) {
 		return;
@@ -67,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		return 0;
 	}
 
-	checkMailThread = threadCreate(checkMailslot, (LPVOID)clientMailslot); 
+	//checkMailThread = threadCreate(checkMailslot, (LPVOID)clientMailslot); 
 
 	mainDialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG_CREATE), NULL, MainWndProc);
 	if (mainDialog != NULL)
@@ -84,12 +87,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	checkMailThread = threadCreate(checkMailslot, (LPVOID)clientMailslot);
 
+
+
+
 	while ((ret = GetMessage(&msg, NULL, 0, 0)) != 0)
 	{
 		if (ret != -1)
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			if (NULL == mainDialog || !IsDialogMessage(mainDialog, &msg)) {
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 		}
 		else
 		{
@@ -97,7 +105,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 			MessageBox(NULL, L"Unexpected Error", NULL, MB_OK | MB_ICONERROR);
 			return 1;
 		}
+
+
 	}
+
+
+
+
 
 	mailslotClose(clientMailslot);
 	return msg.wParam;
@@ -139,37 +153,38 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	switch (msg)
 	{
-	case WM_COMMAND:
-		switch (LOWORD(wParam))
-		{
-		case ID_BUTTON_SEND:
-			// MessageBox(NULL, "Klicked send button", "Test", 0);
-			sendSelectedPlanetsToServer(hWnd);
-			//addSentPlanetsToSentList(hWnd, IDC_LIST_SENT);
+		case WM_COMMAND:
+			switch (LOWORD(wParam))
+			{
+			case ID_BUTTON_SEND:
+				// MessageBox(NULL, "Klicked send button", "Test", 0);
+				sendSelectedPlanetsToServer(hWnd);
+				//addSentPlanetsToSentList(hWnd, IDC_LIST_SENT);
 
-			break;
-		case ID_BUTTON_CREATE: // Creates planet out of information in textboxes in mainDialog
-			if (createPlanet(hWnd, &planet) == 1) { // only insert to LL if createPlanet succeeded (that is, if all user input is valid)
-				InsertAtHead(planet); //Add to DB
-				addToListBox(hWnd, head->data.name, IDC_LIST_LOCAL);
+				break;
+			case ID_BUTTON_CREATE: // Creates planet out of information in textboxes in mainDialog
+				if (createPlanet(hWnd, &planet) == 1) { // only insert to LL if createPlanet succeeded (that is, if all user input is valid)
+					InsertAtHead(planet); //Add to DB
+					addToListBox(hWnd, head->data.name, IDC_LIST_LOCAL);
+				}
+				break;
+			case ID_BUTTON_IMPORT:
+				//MessageBox(NULL, "Klicked import button", "Test", 0);
+				importPlanets(hWnd);
+				break;
+			case ID_BUTTON_EXPORT:
+				exportPlanets(hWnd);
+				break;
 			}
-			break;
-		case ID_BUTTON_IMPORT:
-			//MessageBox(NULL, "Klicked import button", "Test", 0);
-			importPlanets(hWnd);
-			break;
-		case ID_BUTTON_EXPORT:
-			exportPlanets(hWnd);
-			break;
-		}
-		return 0;
-	case WM_CLOSE:
-		DestroyWindow(hWnd);
-		return 0;
+			return 0;
 
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
+			case WM_CLOSE:
+				DestroyWindow(hWnd);
+				return 0;
+
+			case WM_DESTROY:
+				PostQuitMessage(0);
+				return 0;
 	}
 
 	return 0;// DefWindowProc(hWnd, msg, wParam, lParam);
@@ -262,7 +277,7 @@ int createPlanet(HWND hWnd, planet_type *planet)
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet->life));
+		sscanf_s(buffer, "%d", &(planet->life));
 	}
 
 	SetDlgItemText(hWnd, IDC_EDIT_NAME, "\0");
@@ -279,9 +294,15 @@ int createPlanet(HWND hWnd, planet_type *planet)
 void addToListBox(HWND hWnd, char *msg, int listBox)
 {
 	HWND hwndList = GetDlgItem(hWnd, listBox);
-
 	SendMessage(hwndList, LB_ADDSTRING, NULL, (LPARAM)msg);
 }
+
+void updatePlanetCountView(void)
+{
+	char buf[33];
+	_itoa_s(nPlanets, buf, 33, 10);
+	SetDlgItemText(monitorDialog, IDC_STATIC_NUMBEROFPLANETS, buf);
+	}
 
 int exportPlanets(HWND hWnd)
 {
@@ -461,6 +482,7 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 						removeFromListbox(hWnd, IDC_LIST_LOCAL, test[i - j]);
 						j++;
 						addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
+						updatePlanetCountView();
 						toDelete = iterator;
 						break;
 					}
@@ -489,7 +511,7 @@ int sendSelectedPlanetsToServer(HWND hWnd)
 				}
 				nPlanets++;
 				addToListBox(monitorDialog, iterator->data.name, IDC_LIST_SENT);
-
+				updatePlanetCountView();
 				iterator = iterator->next;
 			}
 
@@ -593,6 +615,7 @@ void __stdcall checkMailslot(LPVOID clientMailslot)
 					//MessageBox(0, message, "died", 1);
 					
 					nPlanets--;
+					updatePlanetCountView();
 					break;
 				}
 			}
