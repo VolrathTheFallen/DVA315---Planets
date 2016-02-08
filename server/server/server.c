@@ -88,7 +88,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdL
 							/* The tile of the window, the callback function */
 							/* and the backgrond color */
 
-	hWnd = windowCreate (hPrevInstance, hInstance, nCmdShow, "Himmel", MainWndProc, COLOR_WINDOW+1);
+	hWnd = windowCreate (hPrevInstance, hInstance, nCmdShow, "Universe", MainWndProc, COLOR_WINDOW+1);
 
 							/* start the timer for the periodic update of the window    */
 							/* (this is a one-shot timer, which means that it has to be */
