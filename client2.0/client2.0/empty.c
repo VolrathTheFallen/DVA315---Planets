@@ -193,7 +193,9 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 int createPlanet(HWND hWnd, planet_type *planet)
 {
 	char buffer[BUFFERSIZE] = {'\0'};
-
+	float f;
+	char c;
+	int i;
 
 	GetDlgItemText(hWnd, IDC_EDIT_NAME, buffer, BUFFERSIZE);
 	if (strlen(buffer) < 1)
@@ -222,7 +224,15 @@ int createPlanet(HWND hWnd, planet_type *planet)
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet->sx));
+		if (sscanf_s(buffer, "%f %c", &f, &c) == 1)
+		{
+			sscanf_s(buffer, "%lf", &(planet->sx));
+		}
+		else
+		{
+			MessageBox(0, "Input format error!\nX-position must be float!", "ERROR", 1);
+			return 0;
+		}
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_YPOSITION, buffer, BUFFERSIZE);
@@ -233,7 +243,15 @@ int createPlanet(HWND hWnd, planet_type *planet)
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet->sy));
+		if (sscanf_s(buffer, "%f %c", &f, &c) == 1)
+		{
+			sscanf_s(buffer, "%lf", &(planet->sy));
+		}
+		else
+		{
+			MessageBox(0, "Input format error!\nY-position must be float!", "ERROR", 1);
+			return 0;
+		}
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_XVELOCITY, buffer, BUFFERSIZE);
@@ -244,7 +262,15 @@ int createPlanet(HWND hWnd, planet_type *planet)
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet->vx));
+		if (sscanf_s(buffer, "%f %c", &f, &c) == 1)
+		{
+			sscanf_s(buffer, "%lf", &(planet->vx));
+		}
+		else
+		{
+			MessageBox(0, "Input format error!\nX-velocity must be float!", "ERROR", 1);
+			return 0;
+		}
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_YVELOCITY, buffer, BUFFERSIZE);
@@ -255,7 +281,15 @@ int createPlanet(HWND hWnd, planet_type *planet)
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet->vy));
+		if (sscanf_s(buffer, "%f %c", &f, &c) == 1)
+		{
+			sscanf_s(buffer, "%lf", &(planet->vy));
+		}
+		else
+		{
+			MessageBox(0, "Input format error!\nY-Velocity must be float!", "ERROR", 1);
+			return 0;
+		}
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_MASS, buffer, BUFFERSIZE);
@@ -266,7 +300,15 @@ int createPlanet(HWND hWnd, planet_type *planet)
 	}
 	else
 	{
-		sscanf_s(buffer, "%lf", &(planet->mass));
+		if (sscanf_s(buffer, "%f %c", &f, &c) == 1)
+		{
+			sscanf_s(buffer, "%lf", &(planet->mass));
+		}
+		else
+		{
+			MessageBox(0, "Input format error!\nMass must be float!", "ERROR", 1);
+			return 0;
+		}
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_LIFE, buffer, BUFFERSIZE);
@@ -277,7 +319,15 @@ int createPlanet(HWND hWnd, planet_type *planet)
 	}
 	else
 	{
-		sscanf_s(buffer, "%d", &(planet->life));
+		if (sscanf_s(buffer, "%d %c", &i, &c) == 1)
+		{
+			sscanf_s(buffer, "%d", &(planet->life));
+		}
+		else
+		{
+			MessageBox(0, "Input format error!\nLife must be integer!", "ERROR", 1);
+			return 0;
+		}
 	}
 
 	SetDlgItemText(hWnd, IDC_EDIT_NAME, "\0");
