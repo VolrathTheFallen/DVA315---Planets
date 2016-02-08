@@ -205,15 +205,7 @@ int createPlanet(HWND hWnd, planet_type *planet)
 	}
 	else
 	{
-		if (!planetExists(&planet))
-		{
-			strcpy_s(planet->name, sizeof(planet->name), buffer);
-		}
-		else
-		{
-			MessageBox(0, "Planet already exists!", "ERROR", 1);
-			return 0;
-		}
+		strcpy_s(planet->name, sizeof(planet->name), buffer);
 	}
 
 	GetDlgItemText(hWnd, IDC_EDIT_XPOSITION, buffer, BUFFERSIZE);
@@ -337,6 +329,13 @@ int createPlanet(HWND hWnd, planet_type *planet)
 	SetDlgItemText(hWnd, IDC_EDIT_YVELOCITY, "\0");
 	SetDlgItemText(hWnd, IDC_EDIT_MASS, "\0");
 	SetDlgItemText(hWnd, IDC_EDIT_LIFE, "\0");
+
+	if (planetExists(planet))
+	{
+		MessageBox(0, "Planet already exists!", "ERROR", 1);
+		return 0;
+	}
+
 
 	return 1;
 }
