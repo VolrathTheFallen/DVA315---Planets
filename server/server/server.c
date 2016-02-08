@@ -212,19 +212,22 @@ void __stdcall calculatePosition(planet_type *planet)
 
 		planet->life = planet->life - 1;
 
-		LeaveCriticalSection(&dbAccess);
+		
 
 		if (planet->life <= 0)
 		{
 			//Send message to client
 			killPlanet(planet, 0); //Kill 
+			LeaveCriticalSection(&dbAccess);
 			return; //Kill thread
 		}
 		else if (planet->sx > 800 || planet->sx < 0 || planet->sy > 600 || planet->sy < 0)
 		{
 			killPlanet(planet, 1);
+			LeaveCriticalSection(&dbAccess);
 			return;
 		}
+		LeaveCriticalSection(&dbAccess);
 		Sleep(10);
 	}
 }
@@ -271,7 +274,6 @@ int killPlanet(planet_type *planet, int flag)
 			return;
 		}
 
-		EnterCriticalSection(&dbAccess);
 		strcpy_s(message.name, sizeof(planet->name), planet->name);
 		if (removeNode(planet)) 
 		{
@@ -280,12 +282,11 @@ int killPlanet(planet_type *planet, int flag)
 
 			mailslotWrite(clientMailslot, (void *)&message, sizeof(serverMessage));
 
-			LeaveCriticalSection(&dbAccess);
 
 			return 1;
 		}
 
-		LeaveCriticalSection(&dbAccess);
+		//LeaveCriticalSection(&dbAccess);
 	}
 	else
 		return 0;

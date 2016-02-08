@@ -590,7 +590,7 @@ void __stdcall checkMailslot(LPVOID clientMailslot)
 				{
 					removeFromListbox(monitorDialog, IDC_LIST_SENT, i);
 					addToListBox(monitorDialog, message, IDC_LIST_MESSAGES);
-					MessageBox(0, message, "died", 1);
+					//MessageBox(0, message, "died", 1);
 					
 					nPlanets--;
 					break;
