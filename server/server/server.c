@@ -138,9 +138,15 @@ DWORD WINAPI mailThread(LPVOID arg) {
 							/* create a mailslot that clients can use to pass requests through   */
 							/* (the clients use the name below to get contact with the mailslot) */
 							/* NOTE: The name of a mailslot must start with "\\\\.\\mailslot\\"  */
-
 	
+
 	serverMailslot = mailslotCreate("\\\\.\\mailslot\\serverMailslot");
+	if (serverMailslot == INVALID_HANDLE_VALUE)
+	{
+		MessageBox(0, "Could not create mailslot, exiting.", "Error", 1);
+		Sleep(3000);
+		exit(1);
+	}
 
 							/* (ordinary file manipulating functions are used to read from mailslots) */
 							/* in this example the server receives strings from the client side and   */
